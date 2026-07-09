@@ -31,6 +31,7 @@ be a developer.
 | **Custom page sizes as data** | Define non-standard paper or label sizes (e.g. a specific label roll) as data in Business Central, instead of requiring a code change for anything beyond A4/Letter. |
 | **Embedded designer** | A guided, in-tenant surface for consultants and end users to build and adjust layouts using the capabilities above, without hand-writing template markup. |
 | **Database-backed style definitions** | Store styles (colors, fonts, sizes) in Business Central or template headers, reusable across layouts. Layer styles on top of each other for proper style hierarchies. Define corporate colors once, use everywhere, adjust in one place. |
+| **Dataset-driven format expressions** | Allow AL developers to expose format expressions (for dates, decimals, numbers) through the dataset, then reference them in template format attributes. Gives AL control over formatting without modifying the template. |
 | **Copilot integration for layout design** | AI-driven layout assistance directly in Business Central. Describe what you want in natural language — Copilot generates markup, adjusts styling, and suggests improvements. Rapid prototyping and iteration without writing code. |
 
 ## Planned behavior change
