@@ -4,9 +4,9 @@ Public documentation site for [Pageworks](https://github.com/Stefan-Maron-Consul
 an in-tenant, deterministic PDF report-rendering engine for Business Central. Built with
 [Docusaurus](https://docusaurus.io/) and published to GitHub Pages.
 
-- **Site:** https://stefan-maron-consulting.github.io/pageworks-docs/
+- **Site:** https://pageworks.stefanmaronconsulting.com/
 - **Bugs / feature requests:** [Issues](https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues)
-- **Roadmap:** [Project board](https://github.com/orgs/Stefan-Maron-Consulting/projects) · [Roadmap page](https://stefan-maron-consulting.github.io/pageworks-docs/roadmap)
+- **Roadmap:** [Project board](https://github.com/orgs/Stefan-Maron-Consulting/projects/1) · [Roadmap page](https://pageworks.stefanmaronconsulting.com/roadmap)
 
 This repo is maintained by Stefan Maron Consulting; it is not open to external
 contributions. See [CLAUDE.md](./CLAUDE.md) for the working rules — most importantly, the

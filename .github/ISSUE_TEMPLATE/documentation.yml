@@ -7,7 +7,7 @@ body:
     attributes:
       label: Page
       description: Link to the doc page in question.
-      placeholder: "https://stefan-maron-consulting.github.io/pageworks-docs/..."
+      placeholder: "https://pageworks.stefanmaronconsulting.com/..."
     validations:
       required: true
 

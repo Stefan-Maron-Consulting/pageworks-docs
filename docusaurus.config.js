@@ -11,8 +11,8 @@ const config = {
     v4: true,
   },
 
-  url: 'https://stefan-maron-consulting.github.io',
-  baseUrl: '/pageworks-docs/',
+  url: 'https://pageworks.stefanmaronconsulting.com',
+  baseUrl: '/',
 
   organizationName: 'Stefan-Maron-Consulting',
   projectName: 'pageworks-docs',
@@ -106,7 +106,7 @@ const config = {
               },
               {
                 label: 'Roadmap board',
-                href: 'https://github.com/orgs/Stefan-Maron-Consulting/projects',
+                href: 'https://github.com/orgs/Stefan-Maron-Consulting/projects/1',
               },
             ],
           },
