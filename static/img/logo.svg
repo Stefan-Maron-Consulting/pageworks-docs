@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  
+  <g transform="translate(96 56)">
+    <path d="M42 0 H222 L320 98 V338 Q320 380 278 380 H42 Q0 380 0 338 V42 Q0 0 42 0 Z" fill="#243246"/>
+    <path d="M222 0 L320 98 H246 Q222 98 222 74 Z" fill="#4D63FF"/>
+    <path d="M222 0 V74 Q222 98 246 98 H320" fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round"/>
+    <text x="78" y="300" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="230" font-weight="800" fill="#FFFFFF">P</text>
+  </g>
+</svg>

@@ -1,0 +1,36 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+/* Pageworks brand palette (see pageworks-brand-colors.css in the main repo) */
+:root {
+  --pageworks-primary-dark: #243246;
+  --pageworks-accent-blue: #4d63ff;
+  --pageworks-background-tint: #f5f7fb;
+  --pageworks-border-gray: #d9e1ec;
+
+  --ifm-color-primary: #4d63ff;
+  --ifm-color-primary-dark: #2942ff;
+  --ifm-color-primary-darker: #1732ff;
+  --ifm-color-primary-darkest: #0016e0;
+  --ifm-color-primary-light: #7184ff;
+  --ifm-color-primary-lighter: #8395ff;
+  --ifm-color-primary-lightest: #b8c1ff;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(77, 99, 255, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #8395ff;
+  --ifm-color-primary-dark: #6478ff;
+  --ifm-color-primary-darker: #546bff;
+  --ifm-color-primary-darkest: #2942ff;
+  --ifm-color-primary-light: #a2b0ff;
+  --ifm-color-primary-lighter: #b2beff;
+  --ifm-color-primary-lightest: #e1e5ff;
+  --ifm-background-color: #171c2b;
+  --docusaurus-highlighted-code-line-bg: rgba(131, 149, 255, 0.15);
+}
