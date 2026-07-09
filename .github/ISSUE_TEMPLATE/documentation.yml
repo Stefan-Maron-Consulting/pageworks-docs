@@ -1,0 +1,19 @@
+name: Documentation issue
+description: Something in the docs is missing, unclear, or wrong.
+labels: ["documentation"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: Link to the doc page in question.
+      placeholder: "https://stefan-maron-consulting.github.io/pageworks-docs/..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: What's wrong or missing?
+    validations:
+      required: true

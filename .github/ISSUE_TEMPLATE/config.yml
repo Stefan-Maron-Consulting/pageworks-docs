@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Roadmap
+    url: https://stefan-maron-consulting.github.io/pageworks-docs/roadmap
+    about: See what's already planned before filing a feature request.
+  - name: Roadmap project board
+    url: https://github.com/orgs/Stefan-Maron-Consulting/projects/1
+    about: Track progress on planned work.

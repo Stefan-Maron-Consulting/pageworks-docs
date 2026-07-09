@@ -1,0 +1,46 @@
+name: Feature request
+description: Request a new capability or improvement for Pageworks.
+labels: ["feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing, check the [roadmap](https://stefan-maron-consulting.github.io/pageworks-docs/roadmap)
+        and the [project board](https://github.com/orgs/Stefan-Maron-Consulting/projects/1) —
+        your request may already be planned.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Describe the underlying need, not just the desired solution — this helps us design the right fix.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What would you like Pageworks to do? A sketch of the template syntax or wiring is welcome.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Workarounds you've tried
+      description: Anything you're currently doing to work around this, if applicable.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: audience
+    attributes:
+      label: Who does this affect?
+      options:
+        - Consultants / end users designing layouts
+        - AL developers building against the public API
+        - Both
+        - Not sure
+    validations:
+      required: true

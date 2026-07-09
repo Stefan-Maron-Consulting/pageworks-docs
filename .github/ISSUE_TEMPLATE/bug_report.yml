@@ -1,0 +1,62 @@
+name: Bug report
+description: Something in Pageworks isn't working as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please don't include any customer data, document
+        content, or connection strings/credentials in this report.
+
+  - type: input
+    id: version
+    attributes:
+      label: Pageworks version
+      description: The version from Extension Management (app.json `version`), e.g. 0.8.1.0.
+      placeholder: "0.8.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      options:
+        - SaaS (AppSource-installed)
+        - On-premises / sandbox
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen, per the docs?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened? Include the exact error message/code (e.g. `LF-UNSUP`) if one was shown.
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: A minimal `.pageworks.html` snippet or wiring config that reproduces the issue, if possible.
+      render: html
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else that might help — screenshots, links to relevant docs pages, etc.
+    validations:
+      required: false
