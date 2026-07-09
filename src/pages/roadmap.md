@@ -31,6 +31,16 @@ be a developer.
 | **Custom page sizes as data** | Define non-standard paper or label sizes (e.g. a specific label roll) as data in Business Central, instead of requiring a code change for anything beyond A4/Letter. |
 | **Embedded designer** | A guided, in-tenant surface for consultants and end users to build and adjust layouts using the capabilities above, without hand-writing template markup. |
 
+## Planned behavior change
+
+**Removing the implicit table cell padding.** `<td>`/`<th>` currently get a small,
+undeclared 4pt padding by default — every other element (`<p>`, `<div>`, headings, etc.)
+defaults to zero padding unless you declare it. This is planned to change so table cells
+follow the same "declare nothing, get nothing" rule as everything else. This is a visible
+change for any existing template that relies on the current default spacing without
+declaring `padding` explicitly — when it ships, it will come with clear release notes and
+enough notice to review affected templates before upgrading.
+
 ## Requesting something
 
 Have a capability you need that isn't listed here? [Open a feature request](https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues/new?labels=feature).
