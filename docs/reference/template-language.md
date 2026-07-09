@@ -395,6 +395,54 @@ of stacking — e.g. a VAT breakdown table beside a totals box.
   the row, and the unclaimed width becomes **blank trailing space** on the row's right —
   it is never stretched to fill the gap.
 
+#### Multiple rows of side-by-side blocks
+
+To render **multiple rows** of side-by-side blocks (not just a single row), you must
+separate each row from the next. The engine does not wrap a run of width-declaring
+siblings into multiple rows if their combined width exceeds 100% — instead, a width-sum
+validation error fires (`LF-UNSUP`). Two approaches prevent this:
+
+**Option 1: Use `<hr/>` as a separator** — an `<hr/>` element between width-declaring
+runs breaks the adjacency, ending one row and starting the next:
+
+```xml
+<!-- First row: two side-by-side blocks -->
+<div style="width: 50%;"><p>Left column</p></div>
+<div style="width: 50%;"><p>Right column</p></div>
+
+<!-- Separator breaks the run -->
+<hr/>
+
+<!-- Second row: four narrower blocks -->
+<div style="width: 25%;"><p>A</p></div>
+<div style="width: 25%;"><p>B</p></div>
+<div style="width: 25%;"><p>C</p></div>
+<div style="width: 25%;"><p>D</p></div>
+```
+
+**Option 2: Wrap each row in a container** — enclose each row's width-declaring siblings
+in a single `<div>` (or `<section>`); the container itself has no `width` and renders
+full-width, but its children form a complete adjacent run within:
+
+```xml
+<!-- First row wrapped in a container -->
+<div>
+  <div style="width: 50%;"><p>Left column</p></div>
+  <div style="width: 50%;"><p>Right column</p></div>
+</div>
+
+<!-- Second row: separate container -->
+<div>
+  <div style="width: 25%;"><p>A</p></div>
+  <div style="width: 25%;"><p>B</p></div>
+  <div style="width: 25%;"><p>C</p></div>
+  <div style="width: 25%;"><p>D</p></div>
+</div>
+```
+
+The wrapper approach is often cleaner if each row has specific styling (background colors,
+borders, padding) that should apply to the whole row.
+
 `margin-left`/`margin-right` remain `LF-UNSUP` even on a side-by-side row member today —
 horizontal margin between row siblings is not yet supported (deliberately
 deferred; see "What is NOT supported" below).
