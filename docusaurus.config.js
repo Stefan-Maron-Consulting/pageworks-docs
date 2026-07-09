@@ -98,11 +98,11 @@ const config = {
             items: [
               {
                 label: 'Report a bug',
-                href: 'https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues/new?labels=bug',
+                href: 'https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues/new?template=bug_report.yml',
               },
               {
                 label: 'Request a feature',
-                href: 'https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues/new?labels=feature',
+                href: 'https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues/new?template=feature_request.yml',
               },
               {
                 label: 'Roadmap board',

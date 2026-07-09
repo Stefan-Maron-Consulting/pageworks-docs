@@ -43,5 +43,5 @@ enough notice to review affected templates before upgrading.
 
 ## Requesting something
 
-Have a capability you need that isn't listed here? [Open a feature request](https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues/new?labels=feature).
-Found a bug? [Open a bug report](https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues/new?labels=bug).
+Have a capability you need that isn't listed here? [Open a feature request](https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues/new?template=feature_request.yml).
+Found a bug? [Open a bug report](https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues/new?template=bug_report.yml).
