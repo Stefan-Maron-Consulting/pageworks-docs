@@ -8,14 +8,12 @@ an in-tenant, deterministic PDF report-rendering engine for Business Central. Bu
 - **Bugs / feature requests:** [Issues](https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues)
 - **Roadmap:** [Project board](https://github.com/orgs/Stefan-Maron-Consulting/projects) · [Roadmap page](https://stefan-maron-consulting.github.io/pageworks-docs/roadmap)
 
-## Contributing to the docs
-
-See [CLAUDE.md](./CLAUDE.md) for the working rules of this repo — most importantly, the
+This repo is maintained by Stefan Maron Consulting; it is not open to external
+contributions. See [CLAUDE.md](./CLAUDE.md) for the working rules — most importantly, the
 golden rule about what can and cannot be published here. Pageworks ships closed-source;
 this repo is a curated, human-reviewed mirror of only the parts of the product that are
 safe to publish (the public API contract, the template language, and user/developer
-guides). Never copy content from the private engine repo without running it through that
-filter.
+guides).
 
 ## Local development
 
