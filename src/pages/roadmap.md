@@ -33,6 +33,7 @@ be a developer.
 | **Database-backed style definitions** | Store styles (colors, fonts, sizes) in Business Central or template headers, reusable across layouts. Layer styles on top of each other for proper style hierarchies. Define corporate colors once, use everywhere, adjust in one place. |
 | **Dataset-driven format expressions** | Allow AL developers to expose format expressions (for dates, decimals, numbers) through the dataset, then reference them in template format attributes. Gives AL control over formatting without modifying the template. |
 | **Copilot integration for layout design** | AI-driven layout assistance directly in Business Central. Describe what you want in natural language — Copilot generates markup, adjusts styling, and suggests improvements. Rapid prototyping and iteration without writing code. |
+| **Open source fonts bundled with the extension** | A curated set of high-quality open source fonts shipped with Pageworks, available for use in layouts without managing font files separately or worrying about licensing. Improves the design experience and reduces complexity for consultants and end users. |
 
 ## Requesting something
 
