@@ -23,7 +23,7 @@ const sidebars = {
     {
       type: 'category',
       label: 'Guides',
-      items: ['guides/telemetry'],
+      items: ['guides/creating-layouts-in-the-client', 'guides/telemetry'],
     },
   ],
 };
