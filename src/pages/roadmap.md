@@ -34,16 +34,6 @@ be a developer.
 | **Dataset-driven format expressions** | Allow AL developers to expose format expressions (for dates, decimals, numbers) through the dataset, then reference them in template format attributes. Gives AL control over formatting without modifying the template. |
 | **Copilot integration for layout design** | AI-driven layout assistance directly in Business Central. Describe what you want in natural language — Copilot generates markup, adjusts styling, and suggests improvements. Rapid prototyping and iteration without writing code. |
 
-## Planned behavior change
-
-**Removing the implicit table cell padding.** `<td>`/`<th>` currently get a small,
-undeclared 4pt padding by default — every other element (`<p>`, `<div>`, headings, etc.)
-defaults to zero padding unless you declare it. This is planned to change so table cells
-follow the same "declare nothing, get nothing" rule as everything else. This is a visible
-change for any existing template that relies on the current default spacing without
-declaring `padding` explicitly — when it ships, it will come with clear release notes and
-enough notice to review affected templates before upgrading.
-
 ## Requesting something
 
 Have a capability you need that isn't listed here? [Open a feature request](https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues/new?template=feature_request.yml).

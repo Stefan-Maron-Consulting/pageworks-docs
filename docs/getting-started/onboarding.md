@@ -113,10 +113,12 @@ The normative contract is
 | Category | Constructs |
 |---|---|
 | Root attributes | `page-size` (`A4`/`Letter`), `orientation` (`portrait`/`landscape`), `margin`, `margin-top/-right/-bottom/-left` (points) |
-| Structure | `<header>` `<footer>` `<body>` `<h1>`–`<h3>` `<p>` `<div>` `<section>` `<table>` `<tr>` `<th>` `<td>` `<hr/>` `<br/>` `<strong>` `<em>` `<span>` |
-| Engine attributes | `data-each="DataItemName"` (repeat per row; on `<tr>`/`<div>`/`<section>`), `data-break="page"` (forced break; on `<div>`/`<section>`), `data-keep-together` (on `<div>`/`<section>`/`<tr>`) |
-| Bindings | `{{Column}}` (inside `data-each` scope), `{{DataItem.Column}}` (first row, header-data pattern), `{{PAGE}}`, `{{NUMPAGES}}`, `{{> name}}` / `{{> prefix/name}}` (partials) |
-| Styles (inline `style=""`) | `font-size` (6–72 pt), `font-weight` (`bold`/`normal`), `font-style` (`italic`/`normal`), `color` / `background-color` (`#RRGGBB`), `text-align` (`left`/`right`/`center`), `width` (`%`/`pt`, first-row cells define columns) |
+| Structure | `<header>` `<footer>` `<continuation-header>` `<region>` `<h1>`–`<h3>` `<p>` `<div>` `<section>` `<table>` `<tr>` `<th>` `<td>` `<hr/>` `<br/>` `<strong>` `<em>` `<span>` `<img/>` |
+| Engine attributes | `data-each="DataItemName"` (repeat per row; on `<tr>`/`<div>`/`<section>`), `data-break="page"` (forced break; on `<div>`/`<section>`), `data-keep-together` (on `<div>`/`<section>`/`<tr>`), `data-accumulate="ColumnName"` (running totals), `data-group-header` (repeating group captions) |
+| Bindings | `{{Column}}` (inside `data-each` scope), `{{DataItem.Column}}` (first row, header-data pattern), `{{PAGE}}`, `{{NUMPAGES}}`, `{{CARRIEDFORWARD.Column}}` / `{{BROUGHTFORWARD.Column}}`, `{{> name}}` / `{{> prefix/name}}` (partials) |
+| Styles (inline `style=""`) | `font-size`, `font-family`, `font-weight`, `font-style`, `color` / `background-color`, `text-align`, `letter-spacing`, `text-transform`, `line-height`, `width` (columns / side-by-side block flow), `padding`/`padding-*`, `margin-top`/`margin-bottom`, `border`, `border-top`/`border-bottom`, `vertical-align` — the full enumerated grammar for each is in the reference below |
+| Table cells | `colspan`, `rowspan`, nested `<div>`/`<section>`/`<table>` block content (up to nesting depth 8) |
+| Images | `<img src width height align fit/>` — see "Images" in the reference below |
 
 Rules worth knowing up front:
 
@@ -126,8 +128,12 @@ Rules worth knowing up front:
   an `LF-GEOM` error.
 - `<th>` rows repeat automatically after page breaks inside a table.
 - Data values are always emitted as literal text — markup inside data never executes.
-- One font family (Helvetica regular/bold/oblique/bold-oblique); `font-family` is
-  deliberately not in v1. Output is byte-deterministic — no timestamps, no random IDs.
+- The default font is Helvetica (regular/bold/oblique/bold-oblique) from the PDF
+  standard-14 set — always available, no registration required. `font-family` can also
+  select a custom, tenant-uploaded or extension-registered font family (see
+  [Template language reference](/reference/template-language)'s "Fonts & Typography"
+  section and this guide's section 4a-style registration pattern via `RegisterFont`).
+  Output is byte-deterministic — no timestamps, no random IDs.
 
 ## 4. Partials — shared layout building blocks
 
@@ -200,6 +206,13 @@ Administrators manage partials on the **Pageworks Partials** page (search:
 A change to one shared partial is reflected in every referencing report's next render —
 zero per-report edits.
 
+**Images and fonts follow the same registration pattern.** `PageworksRegistry` also
+exposes `RegisterImage` (baseline image assets, referenced via `<img src="Name">`) and
+`RegisterFont` (baseline font families, referenced via `style="font-family: Name"`) —
+see [Developer reference](/reference/developer-reference) sections 3 and 5 for the
+signatures and rules. Both have tenant-side maintenance pages (search: "Pageworks Image
+Assets", "Pageworks Font Assets") mirroring the Partials page's override/revert model.
+
 ## 5. Tenant user-defined layouts (adjust a layout without a deployment)
 
 Any report already wired to Pageworks can additionally receive a tenant-level
@@ -249,8 +262,8 @@ Reading findings:
 | Warning | Renders, but with documented degradation (e.g. `LF-CHARS` `?` substitution, `LF-KEEPOV` group breaks across pages). |
 
 Every finding message states what failed *and* what to do about it. The full code
-catalog (LF-XML, LF-UNSUP, LF-PARTIAL, LF-AMBIG, LF-CYCLE, LF-BIND, LF-GEOM, LF-FMT,
-LF-PREFIX, LF-KEEPOV, LF-CHARS) is in
+catalog — core language/geometry codes plus the dedicated image (`LF-IMG*`) and
+font/script (`LF-FONT-*`/`LF-SCRIPT-*`) codes — is in
 [Error & finding code catalog](/reference/error-codes).
 
 ## 7. Permissions
@@ -278,8 +291,12 @@ carry only ids, names, counts, and durations. Useful for diagnosing unattended
 | `LF0002` | Render failed | `reportId`, `layoutName`, `durationMs`, `errorCode` (catalog code) |
 | `LF0003` | Validation run | `reportId` (0 when none given), `findingCount`, `errorCount` |
 | `LF0004` | Partial registered | `appId`, `prefix`, `partialCount` |
+| `LF0005` | Image asset registered (`RegisterImage`) | `appId`, `prefix`, `imageCount` |
+| `LF0006` | Font asset registered (`RegisterFont`) | `appId`, `prefix`, `fontCount` |
+| `LF0007` | Install-time self-test ran | `SelfTestPassed` |
 
-Example KQL to watch for failing renders:
+The full reference, including AI-destination routing for your own tenant, is in the
+[Telemetry guide](/guides/telemetry). Example KQL to watch for failing renders:
 
 ```kql
 traces

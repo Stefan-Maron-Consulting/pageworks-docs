@@ -20,7 +20,7 @@ Add Pageworks to your app's `dependencies` array in `app.json`:
       "id": "c653f0a4-b86d-4122-8396-17efd3d7a703",
       "publisher": "Stefan Maron Consulting",
       "name": "Pageworks",
-      "version": "0.8.1.0"
+      "version": "1.0.0.0"
     }
   ]
 }
@@ -31,7 +31,7 @@ minimum, not a pin. Once the dependency is declared and symbols are downloaded, 
 objects marked `Access = Public` on the engine side are visible to your code at all;
 everything else does not resolve, by design. The complete list of public members is
 [API stability promise](/reference/api-stability) in the engine's own repo — restated here only as needed to
-use each extension point (sections 3–5 below).
+use each extension point (sections 3–6 below).
 
 ## 2. Extension point 1 — Registering partials
 
@@ -109,7 +109,63 @@ procedure RegisterPartial(Name: Code[50]; Content: Text; Description: Text[100])
   you cannot register a partial under another app's identity, and you cannot spoof
   `RegisterSource`'s ownership check.
 
-## 3. Extension point 2 — Wiring a report layout
+## 3. Extension point 2 — Registering images
+
+An extension can ship its own baseline image assets (a logo, a stamp, a signature
+graphic) through the same public `PageworksRegistry` codeunit, referenceable by
+templates via `<img src="...">` exactly like a tenant-uploaded image — see
+[Template language reference](/reference/template-language)'s "Images" section for the
+full `src` resolution grammar and format rules.
+
+```al
+codeunit 70101 MyAppInstall
+{
+    Subtype = Install;
+
+    trigger OnInstallAppPerCompany()
+    begin
+        RegisterPageworksImages();
+    end;
+
+    local procedure RegisterPageworksImages()
+    var
+        Registry: Codeunit PageworksRegistry;
+        ImageData: Codeunit "Temp Blob";
+        ImageOutStream: OutStream;
+    begin
+        ImageData.CreateOutStream(ImageOutStream);
+        // ... write your JPEG/PNG source bytes to ImageOutStream ...
+        Registry.RegisterImage('Logo', ImageData, 'Corporate letterhead logo');
+    end;
+}
+```
+
+**Signature** (`Access = Public` on `PageworksRegistry`):
+
+```al
+procedure RegisterImage(Name: Code[50]; var ImageData: Codeunit "Temp Blob"; Description: Text[100])
+```
+
+**Rules a consumer must obey:**
+
+- The image format (JPEG or PNG) is auto-detected from the content's own magic bytes —
+  you never declare a format.
+- Unlike `RegisterPartial`/`RegisterFont`, `RegisterImage` does **not** require a prior
+  `RegisterSource` call: unqualified resolution (`src="Logo"`) works without a claimed
+  prefix; qualified resolution (`src="acme/Logo"`) still requires one.
+- Caller identity is derived from `NavApp.GetCallerModuleInfo()`, exactly like
+  `RegisterPartial`/`RegisterFont` — never a parameter, never spoofable.
+- Registration is idempotent: re-registering byte-identical content (SHA-256 hash
+  compare) is a no-op; changed content updates your baseline in place. A tenant upload
+  of the same effective name overrides your baseline, mirroring the partial/font
+  precedent exactly.
+- The image is validated eagerly, before it is stored — an unsupported container format,
+  corrupt bytes, or content exceeding the 10 MB per-asset limit fails the `RegisterImage`
+  call itself with an actionable `LF-IMGFMT`/`LF-IMGCORRUPT`/`LF-IMGSIZE` error (see
+  [Error & finding code catalog](/reference/error-codes)) — never a bad asset silently
+  accepted and failing later at render time.
+
+## 4. Extension point 3 — Wiring a report layout
 
 Wiring is entirely declarative — there is no AL call into the engine. A report or report
 extension opts a layout into Pageworks rendering by giving it the engine's MIME-type
@@ -183,7 +239,7 @@ reportextension 71179692 StandardSalesInvoicePageworks extends "Standard Sales -
   XHTML/CSS — a closed allowlist, not full HTML/CSS — and anything outside it is an
   `LF-UNSUP` finding.
 
-## 4. Extension point 3 — Registering fonts
+## 5. Extension point 4 — Registering fonts
 
 An extension can ship its own font programs (e.g. a corporate-branding typeface bundled
 with a vertical solution) through the same public `PageworksRegistry` codeunit,
@@ -249,7 +305,7 @@ procedure RegisterFont(Name: Code[50]; StyleVariant: Enum PageworksFontStyleVari
   acknowledgment gate because your own app's install/upgrade code is the accountable
   party for content it ships).
 
-## 5. Extension point 4 — Invoking validation
+## 6. Extension point 5 — Invoking validation
 
 Call the public `PageworksValidator` codeunit (`codeunit 71179690`) to check a
 template before deployment — from your own tooling, a test, or a custom page action.
@@ -301,7 +357,7 @@ has exactly two values:
 Both types are shipped closed (`Extensible = false`) by design — do not build logic that
 assumes either can be extended.
 
-## 6. Stability & versioning
+## 7. Stability & versioning
 
 `PageworksRegistry`, `PageworksValidator`, `PageworksFinding`,
 `PageworksFindingSeverity`, and the `reportlayout/pageworks` MIME-type wiring

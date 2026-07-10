@@ -37,3 +37,11 @@ no external service, no document content ever leaving the tenant.
 Pageworks is distributed on Microsoft AppSource. Found a bug, or want to request a
 feature? [Open an issue](https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues)
 in this repo. See what's planned next on the [roadmap](/roadmap).
+
+:::tip Sandbox environments carry a watermark
+Every page rendered while the license/installation is running in a Business Central
+**sandbox** environment carries a diagonal, tiled "SANDBOX" watermark — this is by
+design and cannot be suppressed by any template or layout setting. Production
+environments render without it. Use a sandbox for evaluation and testing; the
+watermark disappears automatically once the same layout runs in production.
+:::

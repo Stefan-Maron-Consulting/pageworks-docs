@@ -6,19 +6,27 @@ reaches an already-released tenant.
 ## Version scheme
 
 BC apps carry a four-part version, `Major.Minor.Build.Revision` (`app.json` `version`,
-currently `0.8.1.0`). Public API stability — what a dependency app can rely on not
+currently `1.0.0.0`). Public API stability — what a dependency app can rely on not
 breaking — is tied exclusively to the **Major** component; see
-`ApiStabilityPromise.md` for exactly what that promise covers.
+[API stability promise](/reference/api-stability) for exactly what that promise covers.
 
-## Pre-1.0
+## Pre-1.0 (historical)
 
-The current `0.x` line is pre-release. `Major = 0` carries no stability promise at all
-— any part of the app, including the surface that will later become public, may change
-between `0.x` builds without notice. The first AppSource-listed build is `1.0.0.0`.
+Prior to the first AppSource-listed build, the app shipped a `0.x` line. `Major = 0`
+carried no stability promise at all — any part of the app, including the surface that
+later became public, could change between `0.x` builds without notice.
 
-There is no retroactive reclassification of prior `0.x` versions (per the spec's
-Assumptions) — a `0.x` build is not renumbered or backfilled into the 1.0 stability
-story after the fact once 1.0 ships.
+There is no retroactive reclassification of those prior `0.x` versions (per the spec's
+Assumptions) — a `0.x` build was never renumbered or backfilled into the 1.0 stability
+story after the fact.
+
+## 1.0 and later
+
+`1.0.0.0` is the first AppSource-listed build. From this point on, the full stability
+guarantee in [API stability promise](/reference/api-stability) is in force for the six
+items listed there: within the current Major version, none of them will have a breaking
+change made without going through the deprecation/notice process described there, and
+any breaking change ships only as the next Major bump.
 
 ## Release classes
 

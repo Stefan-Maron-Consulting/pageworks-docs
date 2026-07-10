@@ -462,10 +462,13 @@ padded box (not just the text bounds). Nesting is ordinary arithmetic: each leve
 content width is its parent's content width minus **that level's own** padding — padding
 is not inherited or summed across levels.
 
-- **Cell default-override**: `<td>`/`<th>` have a built-in 4pt cell padding.
-  Declaring `padding` on a cell **replaces** that default with the declared value
-  (`padding: 0pt` genuinely removes it); an undeclared cell keeps the 4pt default
-  unchanged.
+- **Cells default to zero padding, same as every other element**: `<td>`/`<th>` do
+  **not** have a built-in default padding — an undeclared cell renders with `0pt`
+  padding, exactly like an undeclared `<div>`/`<p>`. (Earlier versions gave every cell an
+  implicit, undeclared 4pt padding; that implicit default was removed so cells follow
+  the same "declare nothing, get nothing" rule as every other element. If you are
+  upgrading a template authored against an older Pageworks version and relied on that
+  implicit spacing, declare `padding: 4pt` explicitly on the affected cells.)
 
 **`padding-top` / `padding-right` / `padding-bottom` / `padding-left`** — independent
 per-side siblings of the `padding` shorthand, same grammar (`<n>pt`,
@@ -484,13 +487,16 @@ level's own** per-side padding.
   declared on the same element simultaneously — `LF-UNSUP`, naming the element and the
   conflicting property names. Declare either the shorthand (symmetric) or one or more of
   the four per-side properties (asymmetric), never both, on one element.
-- **`<table>`/`<td>`/`<th>` grammar-only note**: the four per-side properties validate
-  cleanly on `<table>`/`<td>`/`<th>` (same applicable-element set as the shorthand), but
-  their layout GEOMETRY on a table's own box or a cell's own box is not yet
-  applied — only `<div>`/`<section>`/`<p>`/`<h1>`–`<h3>` honor per-side padding in the
-  measure and draw passes today. This does not change any existing behavior (tables never
-  had per-side padding before), but authors should not expect a `<table>`- or `<td>`-level
-  `padding-*` declaration to visibly affect that element's own box yet.
+- **`<table>`/`<td>`/`<th>` also honor per-side padding on their own box**: a `<table>`'s
+  own `padding`/`padding-*`/`margin-top`/`margin-bottom`/`border` shift and size its own
+  box — inset the row/cell origin, narrow the column geometry, and (for `border`) draw an
+  outline around the table — in both the normal document flow and inside a `<region>` (the
+  two code paths are kept in sync deliberately, so a table renders identically whether it
+  sits in the body flow, an edge band, or a `<region>`). A `<td>`/`<th>` cell's own
+  `padding`/`padding-*` insets that cell's content exactly like a `<div>`'s. At `padding`/
+  `border`/`margin` all `0` (the default — see "Cells default to zero padding" above),
+  this is byte-identical to earlier behavior; declaring any of them is a real, visible
+  layout change on the table's or cell's own box, not decoration only.
 
 **`margin-top` / `margin-bottom`** — grammar `<n>pt`, non-negative. Adds exactly the
 declared vertical gap between this element's box and the adjacent content, once per
