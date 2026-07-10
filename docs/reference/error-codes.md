@@ -10,6 +10,7 @@ an actionable message (Label with Comment) stating what failed AND what to do.
 | LF-XML | Error | template/partial is not well-formed XML | parse error detail + location |
 | LF-UNSUP | Error | element/attribute/style value outside the language contract | the construct + pointer to supported set |
 | LF-PARTIAL | Error | `{{> name}}` resolves to nothing | partial name + referencing layout/partial |
+| LF-PARTIAL-PARAM | Error | a Block include (`{{> name param=Value ...}}`) leaves one or more of the Block's own `{{$name}}` placeholders unmapped | the Block name + the unmapped placeholder name(s) |
 | LF-AMBIG | Error | unqualified include (or unqualified `<img>` asset name) matches >1 extension | candidates with their prefixes + how to qualify |
 | LF-CYCLE | Error | include chain contains a cycle | the full chain A→B→A |
 | LF-BIND | Error | binding references a data item/column absent from the dataset, **or** a `data-accumulate` cell's value doesn't parse as a culture-invariant Decimal, **or** a `format` expression's detected kind (Decimal vs. Date) doesn't match the column's actual type | binding text + available names / the offending value |

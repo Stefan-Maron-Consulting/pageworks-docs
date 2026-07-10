@@ -31,10 +31,46 @@ Every template starts with a single `<template>` root element:
 
 | Attribute | Values | Default | Notes |
 |---|---|---|---|
-| `page-size` | `A4`, `Letter` | `A4` | A4 = 595.28×841.89 pt, Letter = 612×792 pt |
+| `page-size` | `A4`, `Letter`, or the **name** of a custom page size defined in Business Central | `A4` | A4 = 595.28×841.89 pt, Letter = 612×792 pt. See "Custom page sizes" below. |
 | `orientation` | `portrait`, `landscape` | `portrait` | swaps width/height |
 | `margin` | number (pt) | `56.7` (2 cm) | uniform margin on all four sides |
 | `margin-top`, `margin-right`, `margin-bottom`, `margin-left` | number (pt) | value of `margin` | per-side override |
+
+## Custom page sizes
+
+`A4` and `Letter` ship built in, but a template's `page-size` attribute can reference
+**any page size defined in Business Central** — not just those two. This is for paper
+or label formats specific to your business (a check stub, a label roll, a regional
+paper size) that don't fit the two built-in options.
+
+Page sizes are maintained as data, on a **Page Sizes** list/card in the Business Central
+client (search: "Pageworks Page Sizes"):
+
+1. Open the Page Sizes list and choose **New**.
+2. Give it a **Name** — this is the exact string you'll reference from `page-size="..."`
+   in a template.
+3. Enter the page's width, height, and margins. You can type each dimension in
+   **millimetres, inches, or points** — whichever unit you're comfortable with; enter a
+   value in one and the equivalent in the others is filled in for you automatically.
+   Rendering always works in points internally, but you never need to do that
+   conversion by hand.
+4. Save. The size is now available anywhere in the tenant.
+
+Reference it from a template the same way you'd reference `A4` or `Letter`:
+
+```xml
+<template page-size="ShippingLabel4x6" orientation="portrait">
+  ...
+</template>
+```
+
+Custom page sizes are matched **by name** — an unresolvable `page-size` value (a typo,
+or a size that was deleted) is a validation error, so a broken reference is caught
+before deployment rather than silently falling back to A4.
+
+A built-in size (`A4`, `Letter`) can also be customized the same way an extension-shipped
+Block can: editing it from the Page Sizes list creates your own tenant version, while the
+original stays available to revert to.
 
 ## Structural elements
 
@@ -62,16 +98,75 @@ Only these elements are recognized. Anything else — `<style>`, `<script>`,
 
 ## Engine attributes (`data-*`)
 
-Five `data-*` attributes drive repetition and pagination. Each is valid only on the
-elements listed.
+Six `data-*` attributes drive repetition, conditional display, and pagination. Each is
+valid only on the elements listed.
 
 | Attribute | Valid on | Semantics |
 |---|---|---|
 | `data-each="DataItemName"` | `<tr>`, `<div>`, `<section>` | repeat the element once per row of that `DataItem`; bindings inside the element resolve against the current row. Zero matching rows means the element renders zero times — surrounding content (captions, `<th>` rows) is unaffected. |
+| `data-if="{{Column}}"` | `<tr>`, `<div>`, `<section>` | show the element only when the bound value is "truthy" (see below); hide it entirely — no reserved blank space — otherwise. See "Conditional display" below. |
 | `data-break="page"` | `<div>`, `<section>` | force a page break immediately before this element |
 | `data-keep-together` | `<div>`, `<section>`, `<tr>` | if the element would otherwise straddle a page boundary, move it entirely to the next page. If the element is taller than one full page, it breaks normally instead (this is documented behavior, flagged with an `LF-KEEPOV` warning at validation, not a rendering failure). |
 | `data-accumulate="ColumnName"` | `<td>`, `<th>` (inside a `data-each` scope) | declares the cell's bound column as an accumulator source; the engine maintains a running total for `ColumnName`, updated in row-emission order as rows are drawn — independent of, and in addition to, the cell's own per-row rendering. See "Accumulators and carryover tokens" below. |
 | `data-group-header` | a `<div>`/`<section>` nested inside an outer `data-each`, itself wrapping an inner `data-each` | marks the block as that outer group instance's header, redrawn at the top of the next page if the group's rows straddle a page break. See "Repeating group headers" below. |
+
+## Conditional display (`data-if`)
+
+`data-if` shows or hides a `<tr>`, `<div>`, or `<section>` based on a single bound
+value — no developer, and no template variant, required to conditionally print
+something.
+
+```xml
+<table>
+  <tr><th>Description</th><th>Amount</th><th>VAT</th></tr>
+  <tr data-each="InvoiceLine">
+    <td>{{Description}}</td>
+    <td style="text-align: right;">{{Amount}}</td>
+    <td style="text-align: right;">{{VatAmount}}</td>
+  </tr>
+  <tr data-if="{{TotalVatAmount}}">
+    <td colspan="2">VAT</td>
+    <td style="text-align: right;">{{TotalVatAmount}}</td>
+  </tr>
+</table>
+```
+
+In this example the VAT summary row only prints when there's actually VAT on the
+invoice — an invoice with no VAT-liable lines simply doesn't show the row, and doesn't
+leave a blank gap where it would have been.
+
+**Syntax:**
+
+| Form | Meaning |
+|---|---|
+| `data-if="{{Column}}"` | show when `Column` (current `data-each` row) is truthy |
+| `data-if="{{DataItem.Column}}"` | show when `Column` (first row of `DataItem`, the header-data pattern) is truthy |
+| `data-if="!{{Column}}"` | negation — show when the value is **falsy** instead |
+
+A value is **falsy** — the element is hidden — when it is an empty string, a numeric
+zero, or the literal text `false`. Any other value is truthy and the element shows.
+
+- v1 supports exactly **one bound value, with optional negation** — there is no
+  `==`/`!=`/comparison syntax and no `AND`/`OR` combining multiple conditions yet.
+- `data-if` combines with `data-each` on the same `<tr>`/`<div>`/`<section>` for
+  **per-row** filtering — e.g. hiding only the zero-VAT rows inside a repeating table,
+  while still printing every other row:
+
+  ```xml
+  <tr data-each="InvoiceLine" data-if="{{VatAmount}}">
+    <td>{{Description}}</td>
+    <td style="text-align: right;">{{VatAmount}}</td>
+  </tr>
+  ```
+
+- A hidden element consumes **zero space** — it is exactly as if it were never in the
+  template for that render, not a blank row or an empty box.
+- `data-if` nests normally: hiding a parent element also hides everything inside it,
+  without needing `data-if` repeated on each child.
+- An unresolvable binding inside `data-if` (a column that doesn't exist on the
+  dataset) is rejected at validation, the same as any other unresolved `{{...}}`
+  binding — see `LF-BIND` in the
+  [error code catalog](/reference/error-codes).
 
 ## Bindings
 
@@ -85,6 +180,8 @@ elements listed.
 | `{{BROUGHTFORWARD.Column}}` | anywhere (typically a `<continuation-header>`) | the running total of accumulator column `Column` as of the end of the **prior** page; never printed on page 1 (there is no prior page) |
 | `{{> name}}` | anywhere | include a **Block** (a reusable, shared template fragment; registered via the `RegisterPartial` API — see below): resolves tenant-override-first, then a unique baseline match across installed apps; an ambiguous match is an `LF-AMBIG` error |
 | `{{> prefix/name}}` | anywhere | include a Block from a specific source app's namespace prefix |
+| `{{> name param=Value param2="literal"}}` | anywhere | include a Block, passing parameters — see "Reusable Blocks with parameters" below |
+| `{{$name}}` | inside a Block's own content only | the value supplied for parameter `name` at the include site |
 
 :::note
 Blocks were formerly called "Partials" in the client UI. The rename is caption-only — the
@@ -99,6 +196,110 @@ never executes and is never interpreted as HTML — there is no injection surfac
 unresolved `{{> name}}` (no baseline and no tenant override) is an `LF-PARTIAL` error; a
 Block include chain that cycles back on itself is an `LF-CYCLE` error naming the
 chain.
+
+## Reusable Blocks with parameters
+
+A plain `{{> name}}` always includes a Block's content verbatim, unchanged from before
+this feature existed. A Block can now **also** take parameters at the include site, so
+the same Block can be written once and reused across different reports even when their
+datasets use different field names.
+
+**Inside the Block's own content**, write a placeholder with a `$` sigil. Because a
+Block's content is spliced in as-is at the include site, a Block meant to fill a table
+row's cells contains just the `<td>`s — the surrounding `<tr data-each="...">` is
+supplied by the host template, not the Block:
+
+```html
+<!-- Block "lineItems" -->
+<td>{{$item}}</td>
+<td>{{$desc}}</td>
+<td style="text-align: right;">{{$qty}}</td>
+<td style="text-align: right;">{{$amount}}</td>
+```
+
+**At the include site**, pass a value for each `$`-placeholder as a space-separated
+`key=value` pair after the Block name:
+
+```xml
+<!-- Invoice template -->
+<table>
+  <tr><th>Item</th><th>Description</th><th>Qty</th><th>Amount</th></tr>
+  <tr data-each="InvoiceLine">
+    {{> lineItems item=ItemNo desc=Description qty=Quantity amount=LineAmount}}
+  </tr>
+</table>
+```
+
+```xml
+<!-- Sales order template — same Block, different field names -->
+<table>
+  <tr><th>Item</th><th>Description</th><th>Qty</th><th>Amount</th></tr>
+  <tr data-each="SalesOrderLine">
+    {{> lineItems item=ProductCode desc=ItemDescription qty=OrderQty amount=Total}}
+  </tr>
+</table>
+```
+
+One generic `lineItems` Block now renders correctly on both documents, even though the
+invoice's dataset calls the amount column `LineAmount` and the sales order's calls it
+`Total` — each include site maps its own column names onto the Block's `$item`/`$desc`/
+`$qty`/`$amount` placeholders.
+
+**Rules:**
+
+- An **unquoted** value (`item=ItemNo`) is a **dataset field reference** — the
+  placeholder is bound to that field exactly like an ordinary `{{Column}}` binding, so
+  it participates in `data-each`, `format`, and every other binding rule normally.
+- A **quoted** value (`note="N/A"`) is a **literal string**, inserted into the Block
+  exactly as written — not looked up on the dataset.
+- Every `{{$name}}` placeholder that appears in a Block's content **must** be supplied a
+  value at the include site — a placeholder left unmapped is a validation error (a new
+  `LF-PARTIAL-PARAM` finding — see the [error code catalog](/reference/error-codes)),
+  not a blank or a literal `{{$name}}` printed in the output.
+- A plain `{{> name}}` with **no** parameters behaves exactly as it always has — this
+  feature is purely additive, and a Block that declares no `{{$...}}` placeholders is
+  unaffected either way.
+- Parameters apply **only** to the Block's own `{{$...}}` placeholders at that include
+  site. They do **not** automatically propagate into a Block nested inside it — if a
+  Block-within-a-Block also needs a parameter, pass it again explicitly at the inner
+  include.
+
+### A Block can own its own repeated section
+
+A Block doesn't have to be just the cells of a row — it can contain the **whole**
+repeating section, including its own `data-each`, and receive the data item to loop over
+as a parameter. Because a Block's content is spliced in as plain text before it's parsed,
+a parameter passed as a **quoted literal** lands in the `data-each` attribute exactly as
+if you had typed it there:
+
+```html
+<!-- Block "lineTable" — owns the loop itself -->
+<tr data-each="{{$lines}}">
+  <td>{{$item}}</td>
+  <td style="text-align: right;">{{$amount}}</td>
+</tr>
+```
+
+```xml
+<!-- Include site: the data item to repeat over is passed in -->
+<table>
+  <tr><th>Item</th><th>Amount</th></tr>
+  {{> lineTable lines="InvoiceLine" item=ItemNo amount=LineAmount}}
+</table>
+```
+
+This renders one row per `InvoiceLine`, exactly as if the `<tr data-each="InvoiceLine">`
+had been written directly in the host template. The per-row cell parameters (`item`,
+`amount`) stay unquoted — they're ordinary field references that resolve inside the loop
+the Block's own `data-each` establishes.
+
+:::caution
+The data item passed to a `data-each` **must be quoted** — `lines="InvoiceLine"`, not
+`lines=InvoiceLine`. `data-each` matches a data item by its literal name; an **unquoted**
+value is treated as a field binding instead, which matches no data item, so the section
+renders **zero rows with no error**. If a Block-owned repeating section comes out empty,
+check that its data-item parameter is quoted.
+:::
 
 ## Accumulators and carryover tokens
 

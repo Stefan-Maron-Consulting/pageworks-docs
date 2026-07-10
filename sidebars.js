@@ -23,7 +23,11 @@ const sidebars = {
     {
       type: 'category',
       label: 'Guides',
-      items: ['guides/creating-layouts-in-the-client', 'guides/telemetry'],
+      items: [
+        'guides/creating-layouts-in-the-client',
+        'guides/using-the-insert-picker',
+        'guides/telemetry',
+      ],
     },
   ],
 };

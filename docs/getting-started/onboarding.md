@@ -112,10 +112,10 @@ The normative contract is
 
 | Category | Constructs |
 |---|---|
-| Root attributes | `page-size` (`A4`/`Letter`), `orientation` (`portrait`/`landscape`), `margin`, `margin-top/-right/-bottom/-left` (points) |
+| Root attributes | `page-size` (`A4`/`Letter`/a custom page size name), `orientation` (`portrait`/`landscape`), `margin`, `margin-top/-right/-bottom/-left` (points) |
 | Structure | `<header>` `<footer>` `<continuation-header>` `<region>` `<h1>`–`<h3>` `<p>` `<div>` `<section>` `<table>` `<tr>` `<th>` `<td>` `<hr/>` `<br/>` `<strong>` `<em>` `<span>` `<img/>` |
-| Engine attributes | `data-each="DataItemName"` (repeat per row; on `<tr>`/`<div>`/`<section>`), `data-break="page"` (forced break; on `<div>`/`<section>`), `data-keep-together` (on `<div>`/`<section>`/`<tr>`), `data-accumulate="ColumnName"` (running totals), `data-group-header` (repeating group captions) |
-| Bindings | `{{Column}}` (inside `data-each` scope), `{{DataItem.Column}}` (first row, header-data pattern), `{{PAGE}}`, `{{NUMPAGES}}`, `{{CARRIEDFORWARD.Column}}` / `{{BROUGHTFORWARD.Column}}`, `{{> name}}` / `{{> prefix/name}}` (Blocks) |
+| Engine attributes | `data-each="DataItemName"` (repeat per row; on `<tr>`/`<div>`/`<section>`), `data-if="{{Column}}"` (conditional display; on `<tr>`/`<div>`/`<section>`), `data-break="page"` (forced break; on `<div>`/`<section>`), `data-keep-together` (on `<div>`/`<section>`/`<tr>`), `data-accumulate="ColumnName"` (running totals), `data-group-header` (repeating group captions) |
+| Bindings | `{{Column}}` (inside `data-each` scope), `{{DataItem.Column}}` (first row, header-data pattern), `{{PAGE}}`, `{{NUMPAGES}}`, `{{CARRIEDFORWARD.Column}}` / `{{BROUGHTFORWARD.Column}}`, `{{> name}}` / `{{> prefix/name}}` (Blocks), `{{> name param=Value}}` (Blocks with parameters), `{{$name}}` (a Block's own parameter placeholder) |
 | Styles (inline `style=""`) | `font-size`, `font-family`, `font-weight`, `font-style`, `color` / `background-color`, `text-align`, `letter-spacing`, `text-transform`, `line-height`, `width` (columns / side-by-side block flow), `padding`/`padding-*`, `margin-top`/`margin-bottom`, `border`, `border-top`/`border-bottom`, `vertical-align` — the full enumerated grammar for each is in the reference below |
 | Table cells | `colspan`, `rowspan`, nested `<div>`/`<section>`/`<table>` block content (up to nesting depth 8) |
 | Images | `<img src width height align fit/>` — see "Images" in the reference below |
@@ -128,6 +128,10 @@ Rules worth knowing up front:
   an `LF-GEOM` error.
 - `<th>` rows repeat automatically after page breaks inside a table.
 - Data values are always emitted as literal text — markup inside data never executes.
+- `page-size` isn't limited to `A4`/`Letter` — you can define your own named page sizes
+  (in millimetres, inches, or points) on the **Pageworks Page Sizes** page and reference
+  one by name; see "Custom page sizes" in the
+  [Template language reference](/reference/template-language).
 - The default font is Helvetica (regular/bold/oblique/bold-oblique) from the PDF
   standard-14 set — always available, no registration required. `font-family` can also
   select a custom, tenant-uploaded or extension-registered font family (see
@@ -213,6 +217,13 @@ Administrators manage Blocks on the **Pageworks Blocks** page (search:
 A change to one shared Block is reflected in every referencing report's next render —
 zero per-report edits.
 
+**Blocks can take parameters**, so one generic Block (e.g. a "line items" row) can be
+reused across different reports even when their datasets use different field names —
+see "Reusable Blocks with parameters" in the
+[Template language reference](/reference/template-language) for the full `{{> name
+param=Value}}` / `{{$name}}` syntax and worked example. A plain `{{> name}}` with no
+parameters is unaffected and behaves exactly as before.
+
 **Images and fonts follow the same registration pattern.** `PageworksRegistry` also
 exposes `RegisterImage` (baseline image assets, referenced via `<img src="Name">`) and
 `RegisterFont` (baseline font families, referenced via `style="font-family: Name"`) —
@@ -263,7 +274,9 @@ Two entry points inside Business Central:
   message, location). This page is no longer in global **Tell Me** search (it duplicated
   **Pageworks Layout Studio**'s own built-in preview/findings workflow) — open it by
   navigating to it directly, or use Layout Studio instead for an in-context
-  edit-and-validate loop.
+  edit-and-validate loop. Layout Studio also has an **Insert** picker for browsing and
+  inserting fields, Blocks, images, and fonts without memorizing the token syntax — see
+  the [Insert picker guide](/guides/using-the-insert-picker).
 - **Validate** action on the **Pageworks Blocks** page: validates the selected
   Block's content in isolation (no report context, so binding checks are skipped).
 

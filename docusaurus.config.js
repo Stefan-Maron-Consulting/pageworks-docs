@@ -71,6 +71,11 @@ const config = {
             position: 'left',
           },
           {
+            to: '/changelog',
+            label: 'Changelog',
+            position: 'left',
+          },
+          {
             href: 'https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues',
             label: 'Issues',
             position: 'right',
