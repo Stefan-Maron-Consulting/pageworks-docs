@@ -83,13 +83,21 @@ elements listed.
 | `{{NUMPAGES}}` | anywhere (typically header/footer) | the total page count |
 | `{{CARRIEDFORWARD.Column}}` | anywhere (typically a page footer) | the running total of accumulator column `Column`, through the last row printed on the **current** page |
 | `{{BROUGHTFORWARD.Column}}` | anywhere (typically a `<continuation-header>`) | the running total of accumulator column `Column` as of the end of the **prior** page; never printed on page 1 (there is no prior page) |
-| `{{> name}}` | anywhere | include a partial: resolves tenant-override-first, then a unique baseline match across installed apps; an ambiguous match is an `LF-AMBIG` error |
-| `{{> prefix/name}}` | anywhere | include a partial from a specific source app's namespace prefix |
+| `{{> name}}` | anywhere | include a **Block** (a reusable, shared template fragment; registered via the `RegisterPartial` API — see below): resolves tenant-override-first, then a unique baseline match across installed apps; an ambiguous match is an `LF-AMBIG` error |
+| `{{> prefix/name}}` | anywhere | include a Block from a specific source app's namespace prefix |
+
+:::note
+Blocks were formerly called "Partials" in the client UI. The rename is caption-only — the
+`{{> name}}` include syntax above is unchanged, and the public registration API is still
+`PageworksRegistry.RegisterPartial` (see
+[Developer reference](/reference/developer-reference)). "Block" is what users see; "Partial"
+is still the identifier developers call.
+:::
 
 **Data values are always emitted as literal text.** Markup contained in bound data
 never executes and is never interpreted as HTML — there is no injection surface. An
 unresolved `{{> name}}` (no baseline and no tenant override) is an `LF-PARTIAL` error; a
-partial include chain that cycles back on itself is an `LF-CYCLE` error naming the
+Block include chain that cycles back on itself is an `LF-CYCLE` error naming the
 chain.
 
 ## Accumulators and carryover tokens
@@ -234,6 +242,14 @@ on `<img/>` is `LF-UNSUP`, and so is any other element's attribute (`data-each`,
 `data-break`, etc.) if placed on `<img/>` — and conversely, `src`/`width`/`height`/`align`/
 `fit` are `LF-UNSUP` on every element other than `<img/>`.
 
+**Alignment inside a side-by-side column.** An `<img/>` (or an `<hr/>`, see "Multiple
+rows of side-by-side blocks" below) placed inside a percentage-width `<div>` column now
+aligns to that column's true left and right edges — `align="left"`/`"right"` positions the
+image flush against the column's own boundary, not the page's. This matters whenever a
+column's left inset differs from its right inset (e.g. an inner column with asymmetric
+padding); previously the image could be mispositioned toward the center of the page
+instead of the column.
+
 ### `src` resolution
 
 1. **Static asset name** (`src="Logo"`) — resolves tenant-first, then a unique
@@ -250,7 +266,7 @@ on `<img/>` is `LF-UNSUP`, and so is any other element's attribute (`data-each`,
 
 A bound `src` works both block-level and inside a table cell. Block-level `<img/>`
 (directly inside `<header>`, `<footer>`, `<div>`, `<section>`, etc.) is the common case —
-see the demo `SalesInvoicePageworks.pageworks.html`, which binds
+see the demo `SalesInvoicePageworks.pageworks`, which binds
 `<img src="{{Header.CompanyPicture}}" height="48pt" align="left"/>` in the letterhead. A
 `{{...}}`-bound `<img/>` placed inside a `<td>` resolves through the same Media/Blob
 dataset channel (against the cell's `data-each` row scope) and reserves the correct row
@@ -403,7 +419,9 @@ siblings into multiple rows if their combined width exceeds 100% — instead, a 
 validation error fires (`LF-UNSUP`). Two approaches prevent this:
 
 **Option 1: Use `<hr/>` as a separator** — an `<hr/>` element between width-declaring
-runs breaks the adjacency, ending one row and starting the next:
+runs breaks the adjacency, ending one row and starting the next. Like `<img/>`, an
+`<hr/>` placed inside a percentage-width column aligns to that column's true left/right
+edges (see the alignment note under "Images" above):
 
 ```xml
 <!-- First row: two side-by-side blocks -->

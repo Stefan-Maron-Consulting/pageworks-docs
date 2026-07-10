@@ -33,13 +33,21 @@ everything else does not resolve, by design. The complete list of public members
 [API stability promise](/reference/api-stability) in the engine's own repo — restated here only as needed to
 use each extension point (sections 3–6 below).
 
-## 2. Extension point 1 — Registering partials
+## 2. Extension point 1 — Registering Blocks
 
-A partial is a named, shared template fragment (company footer, address block, style
-header) that any Pageworks template can pull in with `{{> name}}`. Registering your
-own partials lets your app ship reusable fragments that consuming reports — yours or
-anyone else's — can reference, and that tenants can later override without touching your
-code.
+:::note
+"Blocks" is the user-facing name shown in the client (the **Pageworks Blocks** page, its
+captions, tooltips, and messages). The underlying identifiers — the `PageworksRegistry`
+API below, its `RegisterPartial` procedure, the `PageworksPartial` table, and the
+`{{> name}}` include syntax — all still say "Partial"; there is no `RegisterBlock` alias.
+As a developer you call `RegisterPartial`; your users see the results as "Blocks".
+:::
+
+A Block (registered via the `RegisterPartial` API) is a named, shared template fragment
+(company footer, address block, style header) that any Pageworks template can pull in
+with `{{> name}}`. Registering your own Blocks lets your app ship reusable fragments that
+consuming reports — yours or anyone else's — can reference, and that tenants can later
+override without touching your code.
 
 Call the public `PageworksRegistry` codeunit (`codeunit 71179686`) from your own app's
 install or upgrade codeunit — never from a page or a directly-invoked action; the engine
@@ -86,18 +94,18 @@ procedure RegisterPartial(Name: Code[50]; Content: Text; Description: Text[100])
   Prefixes are unique across every installed app in the tenant — the first registrant
   keeps a given prefix; a conflicting claim fails your install with an actionable
   `LF-PREFIX` error naming the owning app.
-- Call `RegisterPartial` after `RegisterSource` for each baseline partial you ship.
+- Call `RegisterPartial` after `RegisterSource` for each baseline Block you ship.
   `Name` is unqualified and only needs to be unique within your own app.
 - Both calls are idempotent: re-registering identical content is a no-op (compared by
   content hash); re-registering with changed content updates your baseline only —
-  tenant-created overrides of that partial are never touched.
-- Reference your partials from any template two ways:
+  tenant-created overrides of that Block are never touched.
+- Reference your Blocks from any template two ways:
   - **Unqualified** — `{{> company-footer}}`. Resolves tenant-override-first, then a
     unique baseline match across all installed apps. If more than one app's baseline
     registers the same unqualified name, an unqualified reference is ambiguous
     (`LF-AMBIG`) — the finding names the candidates and how to qualify.
   - **Qualified** — `{{> mycompany/company-footer}}`. Pinned to your app's prefix;
-    always unambiguous, and the right choice when you reference your own partial from
+    always unambiguous, and the right choice when you reference your own Block from
     your own templates.
 - **Resolution precedence**: a tenant override, if one exists for that name, always wins
   over any extension baseline, regardless of qualification. Nothing else — no version,
@@ -106,7 +114,7 @@ procedure RegisterPartial(Name: Code[50]; Content: Text; Description: Text[100])
   chain that cycles back on itself is `LF-CYCLE`. Both are validation/render errors, not
   silent fallbacks.
 - Caller identity is derived from the platform's module info, never from a parameter —
-  you cannot register a partial under another app's identity, and you cannot spoof
+  you cannot register a Block under another app's identity, and you cannot spoof
   `RegisterSource`'s ownership check.
 
 ## 3. Extension point 2 — Registering images
@@ -157,7 +165,7 @@ procedure RegisterImage(Name: Code[50]; var ImageData: Codeunit "Temp Blob"; Des
   `RegisterPartial`/`RegisterFont` — never a parameter, never spoofable.
 - Registration is idempotent: re-registering byte-identical content (SHA-256 hash
   compare) is a no-op; changed content updates your baseline in place. A tenant upload
-  of the same effective name overrides your baseline, mirroring the partial/font
+  of the same effective name overrides your baseline, mirroring the Block/font
   precedent exactly.
 - The image is validated eagerly, before it is stored — an unsupported container format,
   corrupt bytes, or content exceeding the 10 MB per-asset limit fails the `RegisterImage`
@@ -210,7 +218,7 @@ reportextension 71179692 StandardSalesInvoicePageworks extends "Standard Sales -
         layout(SalesInvoicePageworksPWSTM)
         {
             Type = Custom;
-            LayoutFile = './src/Demo/SalesInvoicePageworks.pageworks.html';
+            LayoutFile = './src/Demo/SalesInvoicePageworks.pageworks';
             MimeType = 'reportlayout/pageworks';
             Caption = 'Sales Invoice (Pageworks)';
             Summary = 'Showcase invoice layout rendered natively in-tenant by Pageworks.';
@@ -223,12 +231,17 @@ reportextension 71179692 StandardSalesInvoicePageworks extends "Standard Sales -
   exact token pair is the stable contract ([API stability promise](/reference/api-stability), item 5). The
   engine's subscriber only handles layouts carrying this MIME type; every other report
   and layout is left entirely to the platform.
-- `LayoutFile` points at your template — a plain, well-formed XHTML file conventionally
-  named `*.pageworks.html`, shipped as a normal source file in your app (see the two demo
-  paths above: `./src/Demo/CustomerListPageworks.pageworks.html` and
-  `./src/Demo/SalesInvoicePageworks.pageworks.html`). It is not registered via any AL call; the
-  platform packages it as the layout's content at build time, same as any other custom
-  report layout.
+- `LayoutFile` points at your template — a plain, well-formed XHTML file shipped as a
+  normal source file in your app. The conventional naming is `*.pageworks.html` for an
+  extension-supplied source file (see `./src/Demo/CustomerListPageworks.pageworks.html`
+  above); `LayoutFile`'s on-disk extension doesn't affect the layout's MIME type, since
+  `MimeType = 'reportlayout/pageworks'` is declared explicitly in AL. The Sales Invoice
+  demo (`./src/Demo/SalesInvoicePageworks.pageworks`) instead uses the single `.pageworks`
+  extension, matching the convention required for a **manually-uploaded** layout (see
+  [Creating a layout in the client](/guides/creating-layouts-in-the-client)) — so that
+  exporting and re-uploading a copy of the demo through the client keeps working. It is
+  not registered via any AL call; the platform packages it as the layout's content at
+  build time, same as any other custom report layout.
 - Requesting PDF, Preview, or Print from a Pageworks-wired layout is served by the engine's
   native PDF backend. Requesting Word or Excel raises an actionable `LF-FMT` error
   instead of producing empty output; declare a second (RDLC or Word) layout in the same
@@ -304,6 +317,15 @@ procedure RegisterFont(Name: Code[50]; StyleVariant: Enum PageworksFontStyleVari
   explicit acknowledgment step for a human uploader — `RegisterFont` has no separate
   acknowledgment gate because your own app's install/upgrade code is the accountable
   party for content it ships).
+
+:::note
+This licensing-acknowledgment step is enforced only in the **tenant-side maintenance UI**
+(the **Pageworks Font Assets** page), not in `RegisterFont` itself. A human uploading a
+font there must go **New → set Name → Acknowledge Licensing → Import**, in that order —
+Import prompts for the acknowledgment inline if it hasn't been given yet. Custom fonts
+(both extension-registered and tenant-uploaded) are a fully shipped, supported feature,
+not a preview capability.
+:::
 
 ## 6. Extension point 5 — Invoking validation
 

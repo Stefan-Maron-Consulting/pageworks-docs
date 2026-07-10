@@ -115,7 +115,7 @@ The normative contract is
 | Root attributes | `page-size` (`A4`/`Letter`), `orientation` (`portrait`/`landscape`), `margin`, `margin-top/-right/-bottom/-left` (points) |
 | Structure | `<header>` `<footer>` `<continuation-header>` `<region>` `<h1>`–`<h3>` `<p>` `<div>` `<section>` `<table>` `<tr>` `<th>` `<td>` `<hr/>` `<br/>` `<strong>` `<em>` `<span>` `<img/>` |
 | Engine attributes | `data-each="DataItemName"` (repeat per row; on `<tr>`/`<div>`/`<section>`), `data-break="page"` (forced break; on `<div>`/`<section>`), `data-keep-together` (on `<div>`/`<section>`/`<tr>`), `data-accumulate="ColumnName"` (running totals), `data-group-header` (repeating group captions) |
-| Bindings | `{{Column}}` (inside `data-each` scope), `{{DataItem.Column}}` (first row, header-data pattern), `{{PAGE}}`, `{{NUMPAGES}}`, `{{CARRIEDFORWARD.Column}}` / `{{BROUGHTFORWARD.Column}}`, `{{> name}}` / `{{> prefix/name}}` (partials) |
+| Bindings | `{{Column}}` (inside `data-each` scope), `{{DataItem.Column}}` (first row, header-data pattern), `{{PAGE}}`, `{{NUMPAGES}}`, `{{CARRIEDFORWARD.Column}}` / `{{BROUGHTFORWARD.Column}}`, `{{> name}}` / `{{> prefix/name}}` (Blocks) |
 | Styles (inline `style=""`) | `font-size`, `font-family`, `font-weight`, `font-style`, `color` / `background-color`, `text-align`, `letter-spacing`, `text-transform`, `line-height`, `width` (columns / side-by-side block flow), `padding`/`padding-*`, `margin-top`/`margin-bottom`, `border`, `border-top`/`border-bottom`, `vertical-align` — the full enumerated grammar for each is in the reference below |
 | Table cells | `colspan`, `rowspan`, nested `<div>`/`<section>`/`<table>` block content (up to nesting depth 8) |
 | Images | `<img src width height align fit/>` — see "Images" in the reference below |
@@ -135,13 +135,20 @@ Rules worth knowing up front:
   section and this guide's section 4a-style registration pattern via `RegisterFont`).
   Output is byte-deterministic — no timestamps, no random IDs.
 
-## 4. Partials — shared layout building blocks
+## 4. Blocks — shared layout building blocks
 
-A partial is a named fragment (company footer, address block, style header) referenced
+> **Terminology note**: this feature is called "Blocks" in the client UI (the
+> **Pageworks Blocks** page, its captions and messages). The AL identifiers underneath —
+> `PageworksRegistry.RegisterPartial`, the `PageworksPartial` table — are unchanged and
+> still say "Partial"; there is no `RegisterBlock` alias. This guide uses "Block" for the
+> user-facing concept and `RegisterPartial` for the actual API call, matching what you'll
+> see in each context.
+
+A Block is a named fragment (company footer, address block, style header) referenced
 with `{{> name}}` and maintained in one place. Two delivery channels exist; a tenant
-partial of the same name always wins over an extension baseline.
+Block of the same name always wins over an extension baseline.
 
-### 4a. Registering partials from your extension
+### 4a. Registering Blocks from your extension
 
 Call the public `PageworksRegistry` codeunit from your install/upgrade codeunit.
 Copy-pasteable example:
@@ -168,7 +175,7 @@ codeunit 70101 MyAppInstall
         // a conflict fails the install with an actionable LF-PREFIX error.
         Registry.RegisterSource('mycompany');
 
-        // Upserts your baseline partial. Caller identity is taken from the
+        // Upserts your baseline Block. Caller identity is taken from the
         // platform (not spoofable). Re-registering identical content is a no-op;
         // new content updates the baseline WITHOUT touching tenant overrides.
         Registry.RegisterPartial(
@@ -179,31 +186,31 @@ codeunit 70101 MyAppInstall
 }
 ```
 
-Reference your partials from any template as `{{> company-footer}}` (unqualified —
+Reference your Blocks from any template as `{{> company-footer}}` (unqualified —
 resolved tenant-first, then unique extension match) or `{{> mycompany/company-footer}}`
-(qualified — pinned to your app). If two apps ship a partial with the same unqualified
+(qualified — pinned to your app). If two apps ship a Block with the same unqualified
 name, unqualified references become ambiguous (`LF-AMBIG`) and the error names the
 candidates and how to qualify.
 
 Upgrade behavior: when your app ships new baseline content, tenants that never edited
-the partial receive it on next render; tenants that created an override keep their
-content and see a "Newer Version Available" indicator on the partials page.
+the Block receive it on next render; tenants that created an override keep their
+content and see a "Newer Version Available" indicator on the Blocks page.
 
 ### 4b. Tenant-side editing (no development required)
 
-Administrators manage partials on the **Pageworks Partials** page (search:
-"Pageworks Partials"):
+Administrators manage Blocks on the **Pageworks Blocks** page (search:
+"Pageworks Blocks"):
 
-- **New** — create a pure tenant partial (a name your templates can reference).
-- **Edit** — edit a tenant partial; invoking Edit on an extension baseline row creates
+- **New** — create a pure tenant Block (a name your templates can reference).
+- **Edit** — edit a tenant Block; invoking Edit on an extension baseline row creates
   a *tenant override* (the baseline itself is never modified and remains read-only).
 - **Delete** — tenant rows only.
-- **Import / Export** — exchange partial content as files.
+- **Import / Export** — exchange Block content as files.
 - **Revert to Extension Content** — deletes an override so the extension baseline
   becomes effective again.
 - **Validate** — see section 6.
 
-A change to one shared partial is reflected in every referencing report's next render —
+A change to one shared Block is reflected in every referencing report's next render —
 zero per-report edits.
 
 **Images and fonts follow the same registration pattern.** `PageworksRegistry` also
@@ -211,7 +218,11 @@ exposes `RegisterImage` (baseline image assets, referenced via `<img src="Name">
 `RegisterFont` (baseline font families, referenced via `style="font-family: Name"`) —
 see [Developer reference](/reference/developer-reference) sections 3 and 5 for the
 signatures and rules. Both have tenant-side maintenance pages (search: "Pageworks Image
-Assets", "Pageworks Font Assets") mirroring the Partials page's override/revert model.
+Assets", "Pageworks Font Assets") mirroring the Blocks page's override/revert model. On
+the **Pageworks Font Assets** page specifically, uploading a font by hand follows a
+discoverable order: **New → set Name → Acknowledge Licensing → Import** — Import prompts
+inline for the licensing acknowledgment if it hasn't been given yet, rather than failing
+with no guidance.
 
 ## 5. Tenant user-defined layouts (adjust a layout without a deployment)
 
@@ -220,10 +231,15 @@ user-defined layout in the engine's format — so a layout can be adjusted in th
 without deploying an extension:
 
 1. Open **Report Layouts** in Business Central and choose **New Layout**.
-2. Pick the wired report, give the layout a name, and select the **Custom** format option.
-3. Upload your `.pageworks.html` file. The layout must carry the engine's mime type —
-   uploading a `.html` template for a report whose active layouts use
-   `reportlayout/pageworks` keeps that identity.
+2. Pick the wired report, give the layout a name, and select the **Custom** (External)
+   format option.
+3. Upload your layout file, named with a **single `.pageworks` extension** (e.g.
+   `MyInvoice.pageworks`) — **not** `.pageworks.html`. Business Central derives a
+   manually-uploaded layout's MIME type from its file extension, so a double extension
+   would resolve to `reportlayout/html` instead of `reportlayout/pageworks` and Pageworks
+   would not pick it up. See
+   [Creating a layout in the client](/guides/creating-layouts-in-the-client) for the full
+   walkthrough, including the copy → edit → re-upload round-trip.
 4. Select which layout is active per report (or per request) using the platform's
    standard layout selection — the engine serves whichever selected layout carries its
    mime type, and leaves every other layout to the platform.
@@ -234,7 +250,7 @@ layout-selection precedence; nothing engine-specific to learn.
 ## 6. Validation workflow — catch problems before deployment
 
 Validation checks a template for: XML well-formedness, unsupported constructs,
-unresolved partial references, impossible geometry, oversized keep-together groups, and
+unresolved Block references, impossible geometry, oversized keep-together groups, and
 (against a chosen report) unresolved data bindings. It returns findings — it never
 renders a broken document silently. The renderer enforces the same rules at render time
 with the same error codes, so a finding you see in validation is exactly the error a
@@ -242,11 +258,14 @@ user would have hit in production.
 
 Two entry points inside Business Central:
 
-- **Validate Layout** page (search: "Validate Layout"): enter a Report ID, paste or
-  **Import** your template text, choose **Validate**. Findings open in the
-  **Pageworks Findings** list (severity, code, message, location).
-- **Validate** action on the **Pageworks Partials** page: validates the selected
-  partial's content in isolation (no report context, so binding checks are skipped).
+- **Validate Layout** page: enter a Report ID, paste or **Import** your template text,
+  choose **Validate**. Findings open in the **Pageworks Findings** list (severity, code,
+  message, location). This page is no longer in global **Tell Me** search (it duplicated
+  **Pageworks Layout Studio**'s own built-in preview/findings workflow) — open it by
+  navigating to it directly, or use Layout Studio instead for an in-context
+  edit-and-validate loop.
+- **Validate** action on the **Pageworks Blocks** page: validates the selected
+  Block's content in isolation (no report context, so binding checks are skipped).
 
 **Note on binding validation:** to resolve `{{...}}` bindings against a report's real
 dataset, the validator runs a throwaway render of that report in the background. This
@@ -270,11 +289,11 @@ font/script (`LF-FONT-*`/`LF-SCRIPT-*`) codes — is in
 
 **End users need nothing.** Running a Pageworks report requires no engine permission
 set and no permission to the engine's internal storage — the engine self-authorizes its
-own layout/partial reads during rendering. Job-queue and background renders work under
+own layout/Block reads during rendering. Job-queue and background renders work under
 the same rule.
 
 The assignable **Pageworks** permission set is only needed for people who
-*administer* the engine: managing partials on the Pageworks Partials page or running
+*administer* the engine: managing Blocks on the Pageworks Blocks page or running
 the validation pages.
 
 ## 8. Telemetry reference
@@ -317,4 +336,4 @@ traces
 4. Open **Validate Layout**, enter the report id, import the template, validate
    (section 6). Fix any Error findings.
 5. Run the report as PDF and check the output.
-6. Optional: register shared partials from your install codeunit (section 4a).
+6. Optional: register shared Blocks from your install codeunit (section 4a).
