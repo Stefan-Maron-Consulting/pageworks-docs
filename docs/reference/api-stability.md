@@ -13,6 +13,7 @@ or be removed in any release, including a Minor or a hotfix.
    - `procedure RegisterPartial(Name: Code[50]; Content: Text; Description: Text[100])`
    - `procedure RegisterImage(Name: Code[50]; var ImageData: Codeunit "Temp Blob"; Description: Text[100])`
    - `procedure RegisterFont(Name: Code[50]; StyleVariant: Enum PageworksFontStyleVariant; var FontData: Codeunit "Temp Blob"; Description: Text[100])`
+   - `procedure RegisterPageSize(Name: Code[50]; WidthPt: Decimal; HeightPt: Decimal; MarginTopPt: Decimal; MarginRightPt: Decimal; MarginBottomPt: Decimal; MarginLeftPt: Decimal; Description: Text[100])`
 
 2. **`codeunit 71179690 PageworksValidator`** (`Access = Public`)
    - `procedure Validate(TemplateText: Text; ReportId: Integer; var Finding: Record PageworksFinding temporary)`

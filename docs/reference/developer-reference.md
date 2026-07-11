@@ -173,7 +173,56 @@ procedure RegisterImage(Name: Code[50]; var ImageData: Codeunit "Temp Blob"; Des
   [Error & finding code catalog](/reference/error-codes)) — never a bad asset silently
   accepted and failing later at render time.
 
-## 4. Extension point 3 — Wiring a report layout
+## 4. Extension point 3 — Registering page sizes
+
+An extension can ship its own baseline **named page sizes** through the same public
+`PageworksRegistry` codeunit. A registered page size is referenceable from any template
+via `page-size="Name"` exactly like the built-in `A4`/`Letter` — see the
+[Template language reference](/reference/template-language)'s "Custom page sizes" section
+for how authors use them (including entering dimensions in mm/inch as well as points in
+the client).
+
+```al
+codeunit 70101 MyAppInstall
+{
+    Subtype = Install;
+
+    trigger OnInstallAppPerCompany()
+    begin
+        RegisterPageworksPageSizes();
+    end;
+
+    local procedure RegisterPageworksPageSizes()
+    var
+        Registry: Codeunit PageworksRegistry;
+    begin
+        // A5 portrait: 419.53 x 595.28 pt, 42.5 pt margins all round.
+        Registry.RegisterPageSize('A5', 419.53, 595.28, 42.5, 42.5, 42.5, 42.5, 'ISO A5');
+    end;
+}
+```
+
+**Signature** (`Access = Public` on `PageworksRegistry`):
+
+```al
+procedure RegisterPageSize(Name: Code[50]; WidthPt: Decimal; HeightPt: Decimal; MarginTopPt: Decimal; MarginRightPt: Decimal; MarginBottomPt: Decimal; MarginLeftPt: Decimal; Description: Text[100])
+```
+
+**Rules a consumer must obey:**
+
+- All dimensions and margins are supplied in **points** (the engine's canonical unit;
+  1 in = 72 pt). The client's Page Sizes card additionally displays and accepts mm and
+  inches, computing points for you — but the API takes points.
+- Like `RegisterImage`, `RegisterPageSize` does **not** require a prior `RegisterSource`
+  call. Caller identity is derived from `NavApp.GetCallerModuleInfo()`, never a parameter.
+- Registration is idempotent: re-registering identical values is a no-op; changed values
+  update your baseline in place. A tenant-created page size (or tenant override) of the
+  same name always wins over your baseline at render time, mirroring the Block/image/font
+  precedent.
+- Referencing a name that resolves to no page size is a validation/render error
+  (`LF-UNSUP` naming the value) — never a silent fallback to a default size.
+
+## 5. Extension point 4 — Wiring a report layout
 
 Wiring is entirely declarative — there is no AL call into the engine. A report or report
 extension opts a layout into Pageworks rendering by giving it the engine's MIME-type
