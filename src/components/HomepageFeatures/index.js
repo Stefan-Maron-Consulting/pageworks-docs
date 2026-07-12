@@ -27,7 +27,7 @@ const FeatureList = [
     title: 'Text-first templates',
     description: (
       <>
-        Layouts are plain, well-formed <code>.pageworks.html</code> files —
+        Layouts are plain, well-formed <code>.pageworks</code> files —
         diff-friendly, reviewable in pull requests, and easy for both people
         and AI agents to author.
       </>

@@ -1,6 +1,6 @@
 # Pageworks — Template Language Reference
 
-This is the authoring reference for `.pageworks.html` templates rendered by Pageworks.
+This is the authoring reference for `.pageworks` templates rendered by Pageworks.
 It is for external developers wiring or authoring Pageworks templates against the
 engine as a dependency — see [Developer reference](/reference/developer-reference) for how a template gets wired
 into a report.
@@ -496,11 +496,14 @@ The maximum image size is **10 MB** per asset.
 A `{{...}}` bound `src` is out of scope for `LF-IMGREF` — an empty or unresolved bound
 field simply renders nothing, never an error.
 
-## Style properties (`style="..."` inline only)
+## Style properties
 
-Inline `style="..."` is the **only** styling mechanism. There is no `<style>` block,
-no external stylesheet, no class/id selector. The full property set — twenty-two
-properties, each with an enumerated, closed set of legal values:
+Styling reaches an element two ways: inline `style="..."` on the element itself, or a **class
+selector** (`.name { ... }`) defined in a `<style>` block or a registered stylesheet referenced via
+`<style-sheets>`, applied with `class="name"`. There is still **no `#id` or element/type selector**
+— see [Shared styles](/guides/styles) for the full class-selector syntax, cascade/precedence rules,
+and how to register a reusable stylesheet. The full property set — twenty-two properties, each with
+an enumerated, closed set of legal values — is the same regardless of which mechanism sets it:
 
 | Property | Values | Applies to |
 |---|---|---|
@@ -917,7 +920,7 @@ repertoire.
   font whose outlines are CFF/PostScript (an `OTTO`-flavored OTF) is rejected at
   registration/validation as `LF-FONT-CFF`, naming the asset and requiring it be
   re-supplied as (or converted to) a glyf-outline TTF/OTF.
-- **256 distinct glyphs per family per document.** Because each embedded sub-font uses
+- **255 distinct glyphs (plus `.notdef`) per family per document.** Because each embedded sub-font uses
   a single-byte simple-font encoding, one `(family, style-variant)` combination can
   reference at most 255 distinct glyphs (plus `.notdef`) in one rendered document. A
   template + dataset combination that pushes a family past that ceiling fails at render
@@ -1033,8 +1036,8 @@ them are in v1 — using any of them produces `LF-UNSUP`.
 
 | Reach for... | Instead use / status |
 |---|---|
-| `<style>` block or external stylesheet | Inline `style="..."` only — see the property table above. Not available in v1. |
-| CSS class/id selectors (`.invoice-row`, `#header`) | No selectors exist. Style each element directly with `style="..."`. |
+| Class selectors, `<style>` blocks, registered stylesheets | **Shipped** — see [Shared styles](/guides/styles). Not in scope here: `#id` selectors and element/type selectors (`p { ... }`) — those remain unsupported/roadmap. |
+| CSS `#id` / element-type selectors (`#header`, `p { ... }`) | No `#id` or element/type selectors exist — only class selectors (`.name`). See [Shared styles](/guides/styles). |
 | Arbitrary web fonts, `@font-face`, Google Fonts, etc. | `font-family` selects from registered font assets (tenant-uploaded or extension-registered) plus `Helvetica` — see "Fonts & Typography" above. There is no URL-based or system-font loading. |
 | CSS 2-/4-value shorthand (`padding: 4pt 8pt`, `margin: 4pt 8pt`) | Not supported — use the uniform `padding: <n>pt` shorthand, or the four independent `padding-top`/`padding-right`/`padding-bottom`/`padding-left` properties (mutually exclusive with the shorthand), and vertical `margin-top`/`margin-bottom` — see "Box model" above. |
 | `margin-left` / `margin-right` (horizontal margin) | `LF-UNSUP` naming the property, even on a side-by-side row member (see "Side-by-side block flow" above) — there is no horizontal-margin semantics yet. **Deferred, not dropped**: this is planned (honoring `margin-left`/`margin-right` between row siblings) — see the [roadmap](/roadmap). |

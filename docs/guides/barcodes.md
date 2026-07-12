@@ -1,0 +1,213 @@
+# Barcodes (1D) — the extensible encoder framework
+
+Pageworks ships a font-asset-coupled framework for 1D (linear) barcode symbologies: Code 39,
+Code 128, and EAN-13 encoders, plus built-in fonts so a tenant gets a working barcode out of the
+box with no font upload of their own. The framework is designed to be extended by third parties
+without touching this app's source.
+
+:::tip Render-time auto-encode is shipped — bind the raw value, no manual encode call needed
+Bind a **raw, unencoded** business value to a run styled in a font whose registered symbology
+(`Interpreter`) is not `None`, and the engine encodes it for you at render time — no
+`Symbology.Encode(...)` call in your own AL code required. See
+[Automatic encoding at render time](#automatic-encoding-at-render-time) below. The template
+language still has no dedicated `<barcode>` tag — a barcode is authored as ordinary styled text in
+a barcode font, same as any other text run — and a manual pre-encode workflow (encode the value
+yourself, bind the already-encoded text) still works too, e.g. for symbologies without a built-in
+encoder. See "What's not built yet" for what's still missing.
+:::
+
+## How it fits together
+
+1. **An encoder** turns raw business data (an item no., a GTIN) into the exact character sequence
+   a barcode font must render — checksums, start/stop markers, code-set switches, all computed in
+   AL, because the engine does no OpenType shaping.
+2. **A font asset** is marked with which symbology (if any) it renders, via a new `Interpreter`
+   field. A font that isn't a barcode font leaves this at `None`.
+3. **A template** renders the already-encoded text in that font, styled via ordinary
+   `style="font-family: ...;"` — exactly like any other custom font today.
+
+## The encoder framework (extensible)
+
+`PageworksBarcodeSymbology` is a public, `Extensible = true` enum implementing the public
+`PageworksBarcodeEncoder` interface:
+
+```al
+interface PageworksBarcodeEncoder
+{
+    procedure Encode(Input: Text): Text;
+}
+```
+
+| Value | Symbology | Notes |
+|---|---|---|
+| `None` (0) | — | identity passthrough; the default for every non-barcode font |
+| `Code39` (1) | Code 39 | |
+| `Code128` (2) | Code 128 | |
+| `Ean13` (3) | EAN-13 | |
+
+`Encode` fails loud (raises an error) on invalid input — a value the symbology's charset can't
+represent, a wrong length, a bad check digit — rather than silently truncating or substituting.
+A malformed barcode is treated as a business-critical defect, never a soft degradation.
+
+### Bringing your own symbology
+
+A third party adds support for a new symbology (e.g. Code 93, ITF-14) without any change to this
+app:
+
+```al
+codeunit 70200 MyCode93Encoder implements PageworksBarcodeEncoder
+{
+    procedure Encode(Input: Text): Text
+    begin
+        // your Code 93 encoding logic
+    end;
+}
+```
+
+```al
+enumextension 70201 MyBarcodeSymbologyExt extends PageworksBarcodeSymbology
+{
+    value(70200; Code93)
+    {
+        Caption = 'Code 93';
+        Implementation = PageworksBarcodeEncoder = MyCode93Encoder;
+    }
+}
+```
+
+## Bringing your own barcode font
+
+Any TrueType-outline (`glyf`) font can be registered as a barcode font by coupling it to a
+symbology on registration:
+
+```al
+procedure RegisterFont(Name: Code[50]; StyleVariant: Enum PageworksFontStyleVariant; var FontData: Codeunit "Temp Blob"; Description: Text[100]; Symbology: Enum PageworksBarcodeSymbology)
+```
+
+This is a **new overload** of `PageworksRegistry.RegisterFont` — the existing 4-parameter overload
+is unchanged and still registers ordinary text fonts (`Symbology` defaults to `None`). Registering
+a font with a non-`None` symbology stores it exactly like any other font asset, plus the
+`Interpreter` tag:
+
+```al
+codeunit 70101 MyAppInstall
+{
+    Subtype = Install;
+
+    trigger OnInstallAppPerCompany()
+    var
+        Registry: Codeunit PageworksRegistry;
+        FontData: Codeunit "Temp Blob";
+        FontOutStream: OutStream;
+    begin
+        FontData.CreateOutStream(FontOutStream);
+        // ... write your TTF/OTF font program bytes to FontOutStream ...
+        Registry.RegisterFont(
+            'MyCode93Font', Enum::PageworksFontStyleVariant::Regular, FontData,
+            'Corporate Code 93 barcode font', Enum::PageworksBarcodeSymbology::Code93);
+    end;
+}
+```
+
+The font asset card and list pages (**Pageworks Font Assets**) surface the `Interpreter` field —
+read-only on Extension-scope rows, editable on Tenant-scope rows, following the same lockdown
+pattern as every other tenant-editable font field.
+
+## Shipped built-in barcode fonts
+
+Every tenant gets these registered as `Extension`-scope baseline `PageworksFontAsset` rows
+automatically on install — zero manual font upload required:
+
+| Font family | Symbology | Provenance |
+|---|---|---|
+| `Libre Barcode 39` | Code 39 | SIL Open Font License 1.1, Copyright 2017-2019 The Libre Barcode Project Authors — a real third-party font, embedded under its OFL license |
+| `Pageworks Code 128` | Code 128 | Generated by Pageworks from the open ISO/IEC 15417 standard's functional bar-width table — not a third-party font, carries no font license (see [Fonts shipped](/guides/fonts)) |
+| `Pageworks EAN-13` | EAN-13 | Generated by Pageworks from the open ISO/IEC 15420 / GS1 standard's functional bar-width tables — same provenance model as the Code 128 font |
+
+Use the exact `font-family` name from the table above in `style="font-family: ...;"`. A template
+combining `font-family` with a weight/style for which no matching variant is registered fails
+loudly (`LF-FONT-VARIANT`) — all three built-in barcode fonts ship Regular weight only today.
+
+:::note Code 39 space character
+The Code 39 encoder pins every space character in its encoded output to codepoint U+00C2 — the
+actual space-bar glyph in the built-in Libre Barcode 39 font (its cmap has no glyph at the
+ordinary space, U+0020). This is a font-specific fixup inside the Code 39 encoder wrapper; you
+never need to do this substitution yourself when using the built-in font + encoder together.
+:::
+
+## Automatic encoding at render time
+
+A font asset registered with a non-`None` `Interpreter` (symbology) is treated as a barcode font.
+Bind a **raw** value — the item number, GTIN, or other plain business text — to a run styled in
+that font, and the renderer auto-encodes it in place before drawing:
+
+```xml
+<p style="font-family: 'Pageworks Code 128'; font-size: 36pt;">{{ItemNo}}</p>
+```
+
+No `Symbology.Encode(...)` call, no pre-encoded dataset column — `{{ItemNo}}` is the plain item
+number; the engine resolves the run's font, sees its `Interpreter` is `Code128`, and runs the raw
+text through that symbology's `PageworksBarcodeEncoder.Encode` exactly once, on the run's full raw
+text, before measuring/drawing it. Every other run (an ordinary text font, `Interpreter = None`) is
+completely unaffected — auto-encode is a strict no-op unless the resolved font is coupled to a
+symbology.
+
+If the value can't be encoded for that symbology (non-numeric input to EAN-13, wrong length, a bad
+check digit), the render fails loud with an `LF-BARCODE-ENCODE` finding rather than drawing a
+silently garbled barcode — see [Error & finding code catalog](/reference/error-codes).
+
+## Manual usage — pre-encoding the value yourself
+
+Auto-encode covers the common case, but you can still encode a value yourself before it reaches
+the template — useful for a symbology without a built-in encoder, or when you need the encoded
+string for something other than direct rendering.
+
+```al
+// e.g. in a report's dataset, a calculated column
+column(BarcodeText; GetEncodedItemNo())
+{
+}
+
+local procedure GetEncodedItemNo(): Text
+var
+    Symbology: Enum PageworksBarcodeSymbology;
+begin
+    Symbology := Symbology::Code39;
+    exit(Symbology.Encode(Item."No."));
+end;
+```
+
+```xml
+<p style="font-family: 'Libre Barcode 39'; font-size: 24pt;">{{BarcodeText}}</p>
+```
+
+The enum value itself implements `PageworksBarcodeEncoder` (via `Implementation =` on each enum
+value), so calling `Encode` directly on the enum value dispatches to the right codeunit — this is
+the same interface-implementing-enum pattern used elsewhere in Business Central.
+
+:::caution Don't double-encode
+If the bound run's font is coupled to a symbology, the engine encodes the value at render time
+regardless of whether you already encoded it yourself. Pre-encode only when binding to a font with
+`Interpreter = None` (i.e. you're rendering the encoded string as plain text, not through a
+barcode-font run) — otherwise bind the raw value and let auto-encode do the work.
+:::
+
+## What's not built yet
+
+- **A dedicated `<barcode>` template tag.** Not part of this release — 1D barcodes are authored
+  today as styled text in a barcode font, the same as any other text run.
+- **Check-digit configurability.** Code 39's Mod-43 check digit is currently always off in the
+  built-in encoder.
+
+## Error codes
+
+| Code | Meaning |
+|---|---|
+| `LF-BARCODE-ENCODE` | Render-time auto-encode (see above) failed for the value bound to a barcode-coupled font — invalid charset, wrong length, or bad check digit for that symbology. |
+| `LF-FONT-VARIANT` | The `font-family` resolved, but no matching weight/style variant is registered. |
+| `LF-FONT-UNRESOLVED` | The `font-family` itself is not a registered font. |
+
+Encoding failures raised from your own manual `Symbology.Encode(...)` call (the "Manual usage"
+pattern above) surface as ordinary AL errors, not `LF-*` findings, since that encoding happens in
+your own report/dataset code before the value ever reaches the Pageworks renderer. See the full
+[Error & finding code catalog](/reference/error-codes) for every code.

@@ -173,7 +173,59 @@ procedure RegisterImage(Name: Code[50]; var ImageData: Codeunit "Temp Blob"; Des
   [Error & finding code catalog](/reference/error-codes)) — never a bad asset silently
   accepted and failing later at render time.
 
-## 4. Extension point 3 — Registering page sizes
+## 4. Extension point 3 — Registering shared stylesheets
+
+An extension can ship its own baseline **stylesheet** — a set of named classes, each a
+closed bag of the same style properties available inline — through the same public
+`PageworksRegistry` codeunit. A template references it via `<style-sheets src="...">`
+and applies a class with `class="name"` exactly like a tenant-defined stylesheet — see
+the [Shared styles guide](/guides/styles) for the full authoring syntax, cascade, and
+precedence rules.
+
+```al
+codeunit 70101 MyAppInstall
+{
+    Subtype = Install;
+
+    trigger OnInstallAppPerCompany()
+    begin
+        RegisterPageworksStyleSheets();
+    end;
+
+    local procedure RegisterPageworksStyleSheets()
+    var
+        Registry: Codeunit PageworksRegistry;
+    begin
+        Registry.RegisterSource('mycompany');
+        Registry.RegisterStyleSheet(
+            'brand',
+            '.brand-heading { color: #1A2B3C; font-weight: bold; }',
+            'Corporate brand classes');
+    end;
+}
+```
+
+**Signature** (`Access = Public` on `PageworksRegistry`):
+
+```al
+procedure RegisterStyleSheet(Name: Code[50]; Content: Text; Description: Text[100])
+```
+
+**Rules a consumer must obey:**
+
+- Requires a prior `RegisterSource` call, exactly like `RegisterPartial` — `Name` is
+  unqualified and only needs to be unique within your own app.
+- Content is validated against the same closed style-property allowlist inline
+  `style="..."` uses, before it is stored — an invalid property or value fails the
+  `RegisterStyleSheet` call itself with an actionable `LF-UNSUP` error, never a bad
+  stylesheet silently accepted and failing later at render/validation time.
+- Registration is idempotent: re-registering byte-identical content (SHA-256 hash
+  compare) is a no-op; changed content updates your baseline in place. A tenant override
+  of the same effective name is never touched, mirroring the Block/image/font precedent.
+- Caller identity is derived from `NavApp.GetCallerModuleInfo()`, never a parameter,
+  never spoofable.
+
+## 5. Extension point 4 — Registering page sizes
 
 An extension can ship its own baseline **named page sizes** through the same public
 `PageworksRegistry` codeunit. A registered page size is referenceable from any template
@@ -222,7 +274,7 @@ procedure RegisterPageSize(Name: Code[50]; WidthPt: Decimal; HeightPt: Decimal; 
 - Referencing a name that resolves to no page size is a validation/render error
   (`LF-UNSUP` naming the value) — never a silent fallback to a default size.
 
-## 5. Extension point 4 — Wiring a report layout
+## 6. Extension point 5 — Wiring a report layout
 
 Wiring is entirely declarative — there is no AL call into the engine. A report or report
 extension opts a layout into Pageworks rendering by giving it the engine's MIME-type
@@ -247,7 +299,7 @@ report 71179675 CustomerListPageworks
         layout(PageworksLayout)
         {
             Type = Custom;
-            LayoutFile = './src/Demo/CustomerListPageworks.pageworks.html';
+            LayoutFile = './src/Demo/CustomerListPageworks.pageworks';
             MimeType = 'reportlayout/pageworks';
             Caption = 'Pageworks template';
             Summary = 'Layered XHTML template rendered by Pageworks.';
@@ -281,27 +333,28 @@ reportextension 71179692 StandardSalesInvoicePageworks extends "Standard Sales -
   engine's subscriber only handles layouts carrying this MIME type; every other report
   and layout is left entirely to the platform.
 - `LayoutFile` points at your template — a plain, well-formed XHTML file shipped as a
-  normal source file in your app. The conventional naming is `*.pageworks.html` for an
-  extension-supplied source file (see `./src/Demo/CustomerListPageworks.pageworks.html`
-  above); `LayoutFile`'s on-disk extension doesn't affect the layout's MIME type, since
-  `MimeType = 'reportlayout/pageworks'` is declared explicitly in AL. The Sales Invoice
-  demo (`./src/Demo/SalesInvoicePageworks.pageworks`) instead uses the single `.pageworks`
-  extension, matching the convention required for a **manually-uploaded** layout (see
-  [Creating a layout in the client](/guides/creating-layouts-in-the-client)) — so that
-  exporting and re-uploading a copy of the demo through the client keeps working. It is
-  not registered via any AL call; the platform packages it as the layout's content at
-  build time, same as any other custom report layout.
+  normal source file in your app. The conventional naming is the single `*.pageworks`
+  extension (see `./src/Demo/CustomerListPageworks.pageworks` above), not a double
+  `*.pageworks.html`; `LayoutFile`'s on-disk extension doesn't affect an extension-wired
+  layout's MIME type, since `MimeType = 'reportlayout/pageworks'` is declared explicitly
+  in AL, but using the single extension consistently matters for a **manually-uploaded**
+  layout, where Business Central derives the MIME type from the file extension (see
+  [Creating a layout in the client](/guides/creating-layouts-in-the-client)). The Sales
+  Invoice demo (`./src/Demo/SalesInvoicePageworks.pageworks`) also uses the single
+  `.pageworks` extension, so that exporting and re-uploading a copy of the demo through
+  the client keeps working. It is not registered via any AL call; the platform packages
+  it as the layout's content at build time, same as any other custom report layout.
 - Requesting PDF, Preview, or Print from a Pageworks-wired layout is served by the engine's
   native PDF backend. Requesting Word or Excel raises an actionable `LF-FMT` error
   instead of producing empty output; declare a second (RDLC or Word) layout in the same
   `rendering` block if the report must also offer those formats.
 - The template language itself (root attributes, structural elements, `data-each`,
   bindings, inline styles) is published for authors as [Template language reference](/reference/template-language) — read
-  it once you start writing `.pageworks.html` content. It is a supported subset of
+  it once you start writing `.pageworks` content. It is a supported subset of
   XHTML/CSS — a closed allowlist, not full HTML/CSS — and anything outside it is an
   `LF-UNSUP` finding.
 
-## 5. Extension point 4 — Registering fonts
+## 7. Extension point 6 — Registering fonts
 
 An extension can ship its own font programs (e.g. a corporate-branding typeface bundled
 with a vertical solution) through the same public `PageworksRegistry` codeunit,
@@ -376,7 +429,26 @@ Import prompts for the acknowledgment inline if it hasn't been given yet. Custom
 not a preview capability.
 :::
 
-## 6. Extension point 5 — Invoking validation
+### Registering a barcode font (`RegisterFont` symbology overload)
+
+A five-parameter overload of `RegisterFont` additionally couples the font asset to a
+1D barcode symbology, marking it as a barcode font — see the
+[Barcodes guide](/guides/barcodes) for how a coupled font's runs are then auto-encoded
+at render time.
+
+**Signature** (`Access = Public` on `PageworksRegistry`):
+
+```al
+procedure RegisterFont(Name: Code[50]; StyleVariant: Enum PageworksFontStyleVariant; var FontData: Codeunit "Temp Blob"; Description: Text[100]; Symbology: Enum PageworksBarcodeSymbology)
+```
+
+This is a non-breaking addition — the four-parameter overload above is unchanged and
+still registers ordinary text fonts (`Symbology` defaults to `None`). Every other rule
+above (one call per family/style-variant, idempotency, tenant-override precedence,
+content validation, licensing responsibility) applies identically; the only difference
+is the extra `Symbology` value stored alongside the font asset.
+
+## 8. Extension point 7 — Invoking validation
 
 Call the public `PageworksValidator` codeunit (`codeunit 71179690`) to check a
 template before deployment — from your own tooling, a test, or a custom page action.
@@ -428,7 +500,7 @@ has exactly two values:
 Both types are shipped closed (`Extensible = false`) by design — do not build logic that
 assumes either can be extended.
 
-## 7. Stability & versioning
+## 9. Stability & versioning
 
 `PageworksRegistry`, `PageworksValidator`, `PageworksFinding`,
 `PageworksFindingSeverity`, and the `reportlayout/pageworks` MIME-type wiring

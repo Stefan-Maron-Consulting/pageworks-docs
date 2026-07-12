@@ -48,7 +48,7 @@ report 70100 MyInvoice
         layout(Pageworks)
         {
             Type = Custom;
-            LayoutFile = './src/Layouts/MyInvoice.pageworks.html';
+            LayoutFile = './src/Layouts/MyInvoice.pageworks';
             MimeType = 'reportlayout/pageworks';
             Caption = 'Pageworks PDF';
             Summary = 'Deterministic PDF rendered by Pageworks.';
@@ -67,11 +67,13 @@ output instead.`) — never silent empty output. If a report must also offer Wor
 declare a second (RDLC or Word) layout in the same `rendering` block; the platform's
 standard layout selection lets users pick per run.
 
-## 2. The `.pageworks.html` convention
+## 2. The `.pageworks` convention
 
-Templates are plain, well-formed XHTML files named `*.pageworks.html` — agent- and
+Templates are plain, well-formed XHTML files named `*.pageworks` — agent- and
 diff-friendly, editable in any text editor, and reviewable in pull requests like any
-other source file. A minimal template for the report above:
+other source file. Use the single extension, not a double `.pageworks.html` — Business
+Central derives a layout's MIME type from its file extension, and a double extension
+resolves unreliably. A minimal template for the report above:
 
 ```html
 <template page-size="A4" orientation="portrait" margin="56.7">
@@ -227,7 +229,7 @@ parameters is unaffected and behaves exactly as before.
 **Images and fonts follow the same registration pattern.** `PageworksRegistry` also
 exposes `RegisterImage` (baseline image assets, referenced via `<img src="Name">`) and
 `RegisterFont` (baseline font families, referenced via `style="font-family: Name"`) —
-see [Developer reference](/reference/developer-reference) sections 3 and 5 for the
+see [Developer reference](/reference/developer-reference) sections 3 and 7 for the
 signatures and rules. Both have tenant-side maintenance pages (search: "Pageworks Image
 Assets", "Pageworks Font Assets") mirroring the Blocks page's override/revert model. On
 the **Pageworks Font Assets** page specifically, uploading a font by hand follows a
@@ -342,7 +344,7 @@ traces
 
 ## Checklist: wiring an existing report
 
-1. Write `MyReport.pageworks.html` next to your report (section 2–3).
+1. Write `MyReport.pageworks` next to your report (section 2–3).
 2. Add the `rendering` clause with `Type = Custom`, `LayoutFile`, and
    `MimeType = 'reportlayout/pageworks'`; set `DefaultRenderingLayout` (section 1).
 3. Deploy to a sandbox.

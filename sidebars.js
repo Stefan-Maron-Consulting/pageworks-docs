@@ -4,6 +4,7 @@
 const sidebars = {
   docsSidebar: [
     'intro',
+    'whats-new',
     {
       type: 'category',
       label: 'Getting started',
@@ -18,6 +19,7 @@ const sidebars = {
         'reference/error-codes',
         'reference/api-stability',
         'reference/versioning-policy',
+        'reference/font-support',
       ],
     },
     {
@@ -27,6 +29,10 @@ const sidebars = {
         'guides/creating-layouts-in-the-client',
         'guides/using-the-insert-picker',
         'guides/telemetry',
+        'guides/styles',
+        'guides/barcodes',
+        'guides/qr-codes',
+        'guides/fonts',
       ],
     },
   ],

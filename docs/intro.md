@@ -12,7 +12,7 @@ no external service, no document content ever leaving the tenant.
 - **In-tenant** — rendering happens inside Business Central. No external calls, no data
   export.
 - **Deterministic** — the same report and data always produce byte-identical PDF output.
-- **Text-first** — layouts are plain, well-formed `.pageworks.html` files: diff-friendly,
+- **Text-first** — layouts are plain, well-formed `.pageworks` files: diff-friendly,
   reviewable in a pull request, and easy for a person or an AI agent to author directly.
 - **Closed-source engine, open contract** — the engine itself ships closed-source, but
   its public API (partial/font/image registration, template validation, and the layout
@@ -25,7 +25,7 @@ no external service, no document content ever leaving the tenant.
 
 - **Business analyst / consultant designing a layout?** Start with
   [Getting started](/getting-started/onboarding) — wiring a report and writing your
-  first `.pageworks.html` template.
+  first `.pageworks` template.
 - **AL developer building a dependency app?** Start with the
   [Developer reference](/reference/developer-reference) — the complete public API
   contract.

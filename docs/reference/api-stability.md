@@ -13,7 +13,11 @@ or be removed in any release, including a Minor or a hotfix.
    - `procedure RegisterPartial(Name: Code[50]; Content: Text; Description: Text[100])`
    - `procedure RegisterImage(Name: Code[50]; var ImageData: Codeunit "Temp Blob"; Description: Text[100])`
    - `procedure RegisterFont(Name: Code[50]; StyleVariant: Enum PageworksFontStyleVariant; var FontData: Codeunit "Temp Blob"; Description: Text[100])`
+   - `procedure RegisterFont(Name: Code[50]; StyleVariant: Enum PageworksFontStyleVariant; var FontData: Codeunit "Temp Blob"; Description: Text[100]; Symbology: Enum PageworksBarcodeSymbology)` —
+     a new overload; the pre-existing 4-parameter overload above is unchanged and still registers
+     ordinary text fonts (`Symbology` defaults to `None`).
    - `procedure RegisterPageSize(Name: Code[50]; WidthPt: Decimal; HeightPt: Decimal; MarginTopPt: Decimal; MarginRightPt: Decimal; MarginBottomPt: Decimal; MarginLeftPt: Decimal; Description: Text[100])`
+   - `procedure RegisterStyleSheet(Name: Code[50]; Content: Text; Description: Text[100])`
 
 2. **`codeunit 71179690 PageworksValidator`** (`Access = Public`)
    - `procedure Validate(TemplateText: Text; ReportId: Integer; var Finding: Record PageworksFinding temporary)`
@@ -39,7 +43,24 @@ or be removed in any release, including a Minor or a hotfix.
    `Extensible = false`) — values `Regular` (0), `Bold` (1), `Italic` (2),
    `BoldItalic` (3); the `StyleVariant` parameter type for `RegisterFont` (item 1).
 
-6. **The `reportlayout/pageworks` MIME-type wiring contract** — the metadata token a
+6. **`enum 71179740 PageworksBarcodeSymbology`** (`Access = Public`, `Extensible = true`) —
+   implements `PageworksBarcodeEncoder`. Values: `None` (0, identity passthrough — the default for
+   a font that is not a barcode font), `Code39` (1), `Code128` (2), `Ean13` (3). Unlike
+   `PageworksFindingSeverity`/`PageworksFontStyleVariant`, this enum is `Extensible = true` by
+   design — a third party adds a new symbology by adding its own enum value with its own
+   `Implementation` codeunit, without any change to this app. It is the type of the `RegisterFont`
+   symbology overload's `Symbology` parameter (item 1) and of the `PageworksFontAsset.Interpreter`
+   field. Being extensible does not loosen ordinal stability: the existing values (`None`=0,
+   `Code39`=1, `Code128`=2, `Ean13`=3) are never renumbered once shipped, since third-party
+   `enumextension` values and tenant data referencing this enum depend on ordinal stability.
+
+7. **`interface PageworksBarcodeEncoder`** (`Access = Public`) — one procedure,
+   `procedure Encode(Input: Text): Text`. A third party implements this directly to add a new
+   barcode symbology (see item 6). Turns raw business data into the exact character/codepoint
+   string a coupled barcode font must render; fails loud (raises an error) on invalid input rather
+   than silently degrading it.
+
+8. **The `reportlayout/pageworks` MIME-type wiring contract** — the metadata token a
    report or report extension declares in its `rendering { layout { Type = Custom;
    MimeType = 'reportlayout/pageworks'; } }` block to opt a layout into being
    rendered by this engine (see `src/Demo/CustomerListPageworks.Report.al` and
@@ -50,9 +71,14 @@ Nothing else — no other codeunit, table, page, enum, or interface in this app 
 of the public contract, regardless of how long it has existed or how stable it looks in
 practice.
 
+The `<qr/>` template-language element is not an AL API member and is therefore not itemized
+above — it is documented as part of the template language contract (see the [QR codes
+guide](/guides/qr-codes)), not the AL public surface. Adding a new element name to the template
+language is the same class of non-breaking change as any prior template-language addition.
+
 ## Stability guarantee
 
-Within a single Major version, none of the six items above will have a breaking change
+Within a single Major version, none of the eight items above will have a breaking change
 made to it. A dependency app compiled against `X.y.z.r` keeps compiling and behaving
 identically against any later `X.y'.z'.r'` in the same Major line.
 
