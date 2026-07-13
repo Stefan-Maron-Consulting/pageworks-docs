@@ -11,7 +11,7 @@ Shared styles introduce **no new style properties**. A class is just a reusable 
 22 properties inline `style="..."` already supports. This is a *reuse* mechanism, not a CSS
 engine: no combinators, no media queries, no variables/tokens, no `#id` or element selectors.
 
-:::note Purely additive
+:::note[Purely additive]
 A template that uses none of this — no `<style-sheets>`, no `<style>` block, no `class` attribute
 anywhere — renders **byte-identically** to before shared styles existed. You only pay for what you
 opt into.
@@ -81,7 +81,7 @@ grammar — `.name { prop: value; ... }`.
 
 This is the single most important thing to internalize:
 
-:::warning Only class selectors exist
+:::warning[Only class selectors exist]
 Styling is applied **only** through class selectors — a `.name { ... }` definition, applied with
 `class="name"` on an element. There is **no** `#id` selector, **no** element/type selector
 (`p { ... }`), and **no** universal or attribute selector. There is no notion of an element `id`
@@ -155,7 +155,7 @@ margin-top       margin-bottom    border           border-top
 border-bottom    vertical-align
 ```
 
-:::caution `margin-left` / `margin-right` are NOT supported
+:::warning[`margin-left` / `margin-right` are NOT supported]
 Horizontal margins are rejected by name — even a "harmless" `margin-left: 0pt` is `LF-UNSUP`. Only
 `margin-top` and `margin-bottom` exist. (This matches inline styling; it is not a shared-styles
 restriction.)
@@ -243,7 +243,7 @@ every other code.
 
 ## Blocks and styles (current behavior)
 
-:::info Current behavior — Block-local isolation is not yet available
+:::info[Current behavior — Block-local isolation is not yet available]
 Styling inside a reusable Block behaves as follows **today**:
 
 - A Block's elements resolve their `class` references against the **host document's** classes (the

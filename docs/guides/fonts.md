@@ -39,7 +39,7 @@ MICR E-13B is a **plain text font, not a barcode symbology** — there is no enc
 account number, check number, plus the four MICR control symbols) is authored as ordinary text
 styled in this font-family; the font's own glyph geometry does the work.
 
-:::caution Author MICR text at exactly 36pt
+:::warning[Author MICR text at exactly 36pt]
 The font's internal units are designed so that **at 36pt**, the glyphs render at the exact
 physical dimensions the ANSI X9.27 standard requires for MICR line reading by check-processing
 equipment — character height, stroke width, and the fixed 8-characters-per-inch pitch all land on

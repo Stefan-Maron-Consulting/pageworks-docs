@@ -5,7 +5,7 @@ Code 128, and EAN-13 encoders, plus built-in fonts so a tenant gets a working ba
 box with no font upload of their own. The framework is designed to be extended by third parties
 without touching this app's source.
 
-:::tip Render-time auto-encode is shipped — bind the raw value, no manual encode call needed
+:::tip[Render-time auto-encode is shipped — bind the raw value, no manual encode call needed]
 Bind a **raw, unencoded** business value to a run styled in a font whose registered symbology
 (`Interpreter`) is not `None`, and the engine encodes it for you at render time — no
 `Symbology.Encode(...)` call in your own AL code required. See
@@ -128,7 +128,7 @@ Use the exact `font-family` name from the table above in `style="font-family: ..
 combining `font-family` with a weight/style for which no matching variant is registered fails
 loudly (`LF-FONT-VARIANT`) — all three built-in barcode fonts ship Regular weight only today.
 
-:::note Code 39 space character
+:::note[Code 39 space character]
 The Code 39 encoder pins every space character in its encoded output to codepoint U+00C2 — the
 actual space-bar glyph in the built-in Libre Barcode 39 font (its cmap has no glyph at the
 ordinary space, U+0020). This is a font-specific fixup inside the Code 39 encoder wrapper; you

@@ -38,7 +38,7 @@ Pageworks is distributed on Microsoft AppSource. Found a bug, or want to request
 feature? [Open an issue](https://github.com/Stefan-Maron-Consulting/pageworks-docs/issues)
 in this repo. See what's planned next on the [roadmap](/roadmap).
 
-:::tip Sandbox environments carry a watermark
+:::tip[Sandbox environments carry a watermark]
 Every page rendered while the license/installation is running in a Business Central
 **sandbox** environment carries a diagonal, tiled "SANDBOX" watermark — this is by
 design and cannot be suppressed by any template or layout setting. Production

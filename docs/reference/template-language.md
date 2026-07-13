@@ -293,7 +293,7 @@ had been written directly in the host template. The per-row cell parameters (`it
 `amount`) stay unquoted — they're ordinary field references that resolve inside the loop
 the Block's own `data-each` establishes.
 
-:::caution
+:::warning
 The data item passed to a `data-each` **must be quoted** — `lines="InvoiceLine"`, not
 `lines=InvoiceLine`. `data-each` matches a data item by its literal name; an **unquoted**
 value is treated as a field binding instead, which matches no data item, so the section

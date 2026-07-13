@@ -43,7 +43,7 @@ square size so every module edge lands on the same grid — never stretched non-
 **Determinism.** Identical input text and `ec-level` always produce a byte-identical module matrix
 — no randomness, no locale/environment dependency.
 
-:::note Existing templates are completely unaffected
+:::note[Existing templates are completely unaffected]
 `qr` is a brand-new element name. No template written before this feature contains one, so this
 feature introduces zero risk to any existing layout — every code path it adds is a strictly
 additive branch keyed on the literal element name `qr`.

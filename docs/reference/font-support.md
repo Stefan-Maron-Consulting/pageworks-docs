@@ -108,7 +108,7 @@ CJK is called out separately from complex-shaping because it is *deferred* pendi
 (Type0/CID) font support — a distinct future capability, not a shaping limitation — but today the
 outcome is the same: it fails loud.
 
-:::note The default Helvetica path is different
+:::note[The default Helvetica path is different]
 This script-scope check applies only to text in a **custom** font-family. The default Helvetica
 path has its own fixed cp1252 repertoire and substitutes `?` for characters outside it — see
 [Template language reference — Fonts & Typography](/reference/template-language#fonts--typography).
