@@ -2,8 +2,7 @@
 
 Curated highlights of the latest Pageworks capabilities — what you can now do, and where to
 learn more. For the complete, terse technical change record, see the
-[CHANGELOG](https://github.com/Stefan-Maron-Consulting/Pageworks/blob/main/CHANGELOG.md) in the
-engine repository.
+[Changelog](/changelog).
 
 ## This release
 
@@ -51,5 +50,4 @@ with `ec-level`), and fails loudly rather than ever printing a silently corrupte
 
 ---
 
-*Want the full, itemized technical history — including internal and mechanical changes not shown
-here? See the [engine CHANGELOG](https://github.com/Stefan-Maron-Consulting/Pageworks/blob/main/CHANGELOG.md).*
+*Want the full, itemized technical history? See the [Changelog](/changelog).*

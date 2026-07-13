@@ -23,7 +23,7 @@ story after the fact.
 ## 1.0 and later
 
 `1.0.0.0` is the first AppSource-listed build. From this point on, the full stability
-guarantee in [API stability promise](/reference/api-stability) is in force for the six
+guarantee in [API stability promise](/reference/api-stability) is in force for the eight
 items listed there: within the current Major version, none of them will have a breaking
 change made without going through the deprecation/notice process described there, and
 any breaking change ships only as the next Major bump.

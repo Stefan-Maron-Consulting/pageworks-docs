@@ -12,6 +12,41 @@ build log. For what's coming next, see the [Roadmap](/roadmap).
 Changes are grouped as **Added** (new capabilities), **Changed** (existing behaviour that
 now works differently), and **Fixed** (corrected defects).
 
+## 2026-07-12
+
+### Added
+
+- **Database-backed shared styles.** Define named style classes once — inline `style="..."`
+  on an element, a template's own `<style>` block, or a registered, reusable stylesheet
+  asset — instead of repeating `style="..."` everywhere. Corporate colors and typography
+  set once, used everywhere, adjustable in one place. A per-property cascade resolves
+  inline > `<style>` block > registered stylesheet across a 22-property allowlist.
+  Registered stylesheets follow the same Copy / Customize / Revert lifecycle as Blocks and
+  fonts. See [Shared styles guide](/guides/styles).
+- **1D barcodes with render-time auto-encode.** Bind a raw value (an item number, a GTIN)
+  to text styled in a built-in barcode font — Code 39, Code 128, or EAN-13 — and Pageworks
+  auto-encodes it for you at render time; no manual encode call required. The framework is
+  extensible for a developer to add a symbology of their own. See
+  [Barcodes guide](/guides/barcodes).
+- **QR codes — the `<qr>` tag.** Render a scannable, vector QR code with a single
+  `<qr value="{{...}}" />` tag bound to any dataset field, with an adjustable
+  `ec-level`. See [QR codes guide](/guides/qr-codes).
+- **Check printing — built-in MICR E-13B font.** Author a MICR line (routing, account,
+  check number, plus the four control symbols) as ordinary styled text — at `font-size:
+  36pt` the glyphs render at the exact ANSI X9.27 physical dimensions check-processing
+  equipment expects. See [Fonts shipped with Pageworks](/guides/fonts).
+- **Built-in general-purpose text fonts.** Every install now seeds baseline
+  `Extension`-scope fonts (Source Sans 3 and Source Serif 4, all four style variants) — a
+  working, professional-looking document out of the box with no font upload required. See
+  [Fonts shipped with Pageworks](/guides/fonts).
+
+### Changed
+
+- **Layout file extension normalized to `.pageworks`.** The layout file extension is now a
+  single `.pageworks` (previously the double `.pageworks.html`, which was unreliable for
+  report-layout MIME derivation). Existing layouts are unaffected; new layouts should use
+  the single extension.
+
 ## 2026-07-10
 
 ### Added

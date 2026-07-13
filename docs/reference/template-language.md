@@ -400,26 +400,34 @@ template vocabulary (block elements, bindings, `data-*` attributes, `style="..."
 
 | Attribute | Required | Values | Notes |
 |---|---|---|---|
-| `x`, `y` | Yes | number (pt) | measured from the page's physical **top-left** corner (not the content area, not bottom-left) |
+| `x` or `right` | Exactly one | number (pt) | `x` measures from the page's physical **left** edge; `right` measures from the page's physical **right** edge instead (an inset, not an absolute position) — pick whichever is easier for the layout |
+| `y` or `bottom` | Exactly one | number (pt) | `y` measures from the page's physical **top** edge; `bottom` measures from the page's physical **bottom** edge instead (an inset) |
 | `width`, `height` | Yes | number (pt) | the region's box size; content overflowing the declared box is not clipped specially — author to fit |
 
 - The engine converts the declared top-left/y-down coordinates to the PDF page's
   native bottom-left/y-up coordinate space internally — authors always write top-left/
   y-down regardless of the underlying PDF convention.
+- `right` and `bottom` are anchor alternatives to `x` and `y` for cases where a region
+  should stay pinned to the trailing edge of the page regardless of page size — e.g. a
+  "Page X of Y" stamp anchored to the bottom-right corner. You may mix axes freely
+  (e.g. `x` with `bottom`, or `right` with `y`); you just can't supply both alternatives
+  for the same axis.
 - A region is drawn with its own independent cursor; it never reads or affects the
   content area's flowed-layout cursor, margins, or pagination — unaffected flowed
   content coexists on the same page as one or more regions.
-- Missing any of `x`/`y`/`width`/`height`, or a non-numeric value, is `LF-UNSUP`.
+- Missing both `x`/`right` for the horizontal axis, missing both `y`/`bottom` for the
+  vertical axis, supplying both alternatives for the same axis, missing `width`/`height`,
+  or a non-numeric value, is `LF-UNSUP`.
 - A region whose declared bounds fall partially or fully outside the physical page
-  (accounting for the top-left→PDF coordinate conversion) is `LF-GEOM` at validation —
-  naming the region's location, its declared bounds, and the page's physical
-  dimensions.
+  (accounting for the top-left→PDF coordinate conversion, and the `right`/`bottom` inset
+  conversion) is `LF-GEOM` at validation — naming the region's location, its declared
+  bounds, and the page's physical dimensions.
 
 ### Region error codes
 
 | Code | Fires when |
 |---|---|
-| `LF-UNSUP` | a `<region>` is missing a required `x`/`y`/`width`/`height` attribute, or one of them is not a plain number |
+| `LF-UNSUP` | a `<region>` is missing `x`/`right` or `y`/`bottom` (or supplies both for the same axis), is missing `width`/`height`, or one of the attributes is not a plain number |
 | `LF-GEOM` | a `<region>`'s declared `x`/`y`/`width`/`height` bounds fall partially or fully outside the physical page |
 
 ## Images (`<img/>`)

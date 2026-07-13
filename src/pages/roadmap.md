@@ -28,6 +28,10 @@ be a developer.
 | **Custom page sizes as data** | Define non-standard paper or label sizes (e.g. a specific label roll) as data in Business Central, instead of requiring a code change for anything beyond A4/Letter. See [Template language reference](/reference/template-language). |
 | **Insert picker in Layout Studio** | Browse and insert dataset fields, Blocks, images, and fonts without memorizing the template syntax. See [Using the Insert picker](/guides/using-the-insert-picker). |
 | **Database-backed shared styles** | Define named style classes once — as a registered, reusable stylesheet or a template's own `<style>` block — instead of repeating `style="..."` on every element. Define corporate colors and typography once, use everywhere, adjust in one place. Follows the same Copy / Customize / Revert lifecycle as Blocks and fonts. See [Shared styles guide](/guides/styles). |
+| **Open source fonts bundled with the extension** | A curated set of high-quality open source fonts (plus generated barcode and MICR fonts) shipped with every install — no manual font upload required for a working, professional-looking document out of the box. See [Fonts shipped with Pageworks](/guides/fonts). |
+| **1D barcodes** | Bind a raw value (an item number, a GTIN) to text styled in a built-in barcode font — Code 39, Code 128, or EAN-13 — and Pageworks auto-encodes it at render time. No font hunting, no manual encode step. See [Barcodes guide](/guides/barcodes). |
+| **QR codes** | Drop a single `<qr value="{{...}}" />` tag to render a scannable, vector QR code bound to any dataset field — no font upload, no external service. See [QR codes guide](/guides/qr-codes). |
+| **Check printing (MICR E-13B)** | A built-in MICR E-13B font makes Pageworks a viable check-printing engine — author the MICR line as ordinary styled text, no special encoding. See [Fonts shipped with Pageworks](/guides/fonts). |
 
 ## Planned capabilities
 
@@ -40,7 +44,6 @@ be a developer.
 | **Richer style selectors** | Shared styles currently target elements by named **class** (`class="brand"`). Planned: broaden how a style rule can match — at minimum element **`id`** selectors, and potentially element/type selectors (e.g. style every `<td>`) — to give the fuller targeting flexibility people expect from HTML/CSS. (Also on this track: fully **isolated Block-local styles**, so a Block can carry its own class namespace without leaking to or from the host layout.) |
 | **Dataset-driven format expressions** | Allow AL developers to expose format expressions (for dates, decimals, numbers) through the dataset, then reference them in template format attributes. Gives AL control over formatting without modifying the template. |
 | **Copilot integration for layout design** | AI-driven layout assistance directly in Business Central. Describe what you want in natural language — Copilot generates markup, adjusts styling, and suggests improvements. Rapid prototyping and iteration without writing code. |
-| **Open source fonts bundled with the extension** | A curated set of high-quality open source fonts shipped with Pageworks, available for use in layouts without managing font files separately or worrying about licensing. Improves the design experience and reduces complexity for consultants and end users. |
 
 ## Requesting something
 

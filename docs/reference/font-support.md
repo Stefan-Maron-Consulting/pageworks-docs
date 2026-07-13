@@ -12,8 +12,7 @@ constraints below.
 Pageworks reads **static, TrueType-outline (`glyf`) sfnt fonts** — the classic `.ttf` shape.
 
 - The font must have a `glyf` table and a `loca` table (TrueType glyph outlines), and its sfnt
-  version must be `0x00010000`. Fonts meeting this are handled by the reader
-  (`PageworksFontReader.IsGlyfOutline`).
+  version must be `0x00010000`. Fonts meeting this are handled by the engine's font reader.
 - **CFF / OpenType-PS outlines are NOT supported.** A font whose outlines are CFF (a `CFF ` table
   present, i.e. an `OTTO`-flavored OpenType font — typically `.otf`) is rejected at
   registration/validation with **`LF-FONT-CFF`**, naming the asset and requiring it be re-supplied
@@ -23,8 +22,8 @@ Pageworks reads **static, TrueType-outline (`glyf`) sfnt fonts** — the classic
 ### Character mapping — which `cmap` subtable formats are read
 
 The engine maps Unicode codepoints to glyphs through the font's `cmap` table, and supports
-**subtable formats 0, 4, and 6** (`PageworksFontReader.IsSupportedCmapFormat`). It selects the
-best available Unicode-usable subtable by platform/encoding priority (highest first):
+**subtable formats 0, 4, and 6**. It selects the best available Unicode-usable subtable by
+platform/encoding priority (highest first):
 
 1. `(3, 1)` — Windows, Unicode BMP
 2. `(0, 3)` / `(0, 4)` — Unicode platform
@@ -82,8 +81,7 @@ so none of the following work:
 ### Script / codepoint scope (custom fonts only)
 
 Text styled with a **custom `font-family`** (not the default Helvetica path) is validated against a
-fixed, versioned script classification (`PageworksScriptClassifier`). The **in-scope** ranges that
-render are:
+fixed, versioned script classification. The **in-scope** ranges that render are:
 
 | Range | Block |
 |---|---|
@@ -118,11 +116,11 @@ path has its own fixed cp1252 repertoire and substitutes `?` for characters outs
 
 ### Resource limits
 
-| Limit | Value | Enforced by / code |
+| Limit | Value | Code |
 |---|---|---|
-| Maximum size of a single font file | **2 MB** (2,097,152 bytes) | `PageworksFontMgt.MaxFontBytesLimit`; over → `LF-FONT-OVERSIZE` |
+| Maximum size of a single font file | **2 MB** (2,097,152 bytes) | over → `LF-FONT-OVERSIZE` |
 | Zero-byte upload | rejected | `LF-FONT-ZEROBYTE` |
-| Distinct glyphs per `(family, style-variant)` per rendered document | **255** (plus `.notdef`) — the single-byte simple-font ceiling | `IPageworksFontEncoder` / `PageworksSimpleFontEncoder`; over → `LF-FONT-GLYPHLIMIT` |
+| Distinct glyphs per `(family, style-variant)` per rendered document | **255** (plus `.notdef`) — the single-byte simple-font ceiling | over → `LF-FONT-GLYPHLIMIT` |
 
 The 2 MB per-file limit comfortably covers a full-weight Latin/Cyrillic/Greek TrueType family
 file while still failing loud on a mistakenly-uploaded multi-megabyte CJK-coverage font. The
@@ -173,9 +171,9 @@ pipeline — the only enforced quantitative limits are the 2 MB per-file size an
 You do **not** have to freeze or version-pin fonts for reproducible output.
 
 - **Each output PDF embeds the subsetted font it used.** The engine subsets the font down to
-  exactly the glyphs the document reaches and embeds that subset directly in the PDF
-  (`PageworksFontSubsetter` emits `cmap`/`glyf`/`head`/`hhea`/`hmtx`/`loca`/`maxp`/`name`/`post`,
-  drops hinting and shaping/`DSIG` tables). A produced document is therefore fully **self-contained**
+  exactly the glyphs the document reaches and embeds that subset directly in the PDF (the subsetter
+  emits `cmap`/`glyf`/`head`/`hhea`/`hmtx`/`loca`/`maxp`/`name`/`post`, drops hinting and
+  shaping/`DSIG` tables). A produced document is therefore fully **self-contained**
   — it renders identically on any viewer with none of the fonts installed, and is **unaffected by
   any later change** to the font asset in the tenant.
 - **A loaded font is stored as an asset and reused** for subsequent renders (the Extension/Tenant

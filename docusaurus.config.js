@@ -122,6 +122,10 @@ const config = {
                 label: 'GitHub',
                 href: 'https://github.com/Stefan-Maron-Consulting/pageworks-docs',
               },
+              {
+                label: 'Stefan Maron Consulting',
+                href: 'https://stefanmaronconsulting.com/pageworks/',
+              },
             ],
           },
         ],
