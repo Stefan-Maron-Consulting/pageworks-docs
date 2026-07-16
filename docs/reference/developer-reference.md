@@ -7,6 +7,10 @@ symbol package, is everything a third-party developer will ever see or need. If 
 in your onboarding requires reading engine source, that is a gap in this document, not
 something to work around by asking for the source.
 
+Building an *external*, non-AL tool instead (a layout-development assistant, a CI
+pipeline)? See [External API for layout-development tools](/reference/external-layout-api)
+— a separate, Business Central API contract, not the AL codeunits documented below.
+
 ---
 
 ## 1. Consuming the engine as a dependency

@@ -174,6 +174,7 @@ zero, or the literal text `false`. Any other value is truthy and the element sho
 |---|---|---|
 | `{{Column}}` | inside a `data-each` scope | the column value of the current row |
 | `{{DataItem.Column}}` | anywhere | the column value of the **first** row of that data item (the header-data pattern — e.g. printing a customer name once from a repeating dataset) |
+| `{{ColumnCaption}}` / `{{DataItem.ColumnCaption}}` | wherever `{{Column}}` / `{{DataItem.Column}}` is valid | that column's **caption** (its field label) instead of its value — for a report column that exposes one via `IncludeCaption`. Append the literal suffix `Caption` to the column name; each column's caption is independently addressable, not a shared slot |
 | `{{PAGE}}` | anywhere (typically header/footer) | the current page number |
 | `{{NUMPAGES}}` | anywhere (typically header/footer) | the total page count |
 | `{{CARRIEDFORWARD.Column}}` | anywhere (typically a page footer) | the running total of accumulator column `Column`, through the last row printed on the **current** page |
@@ -182,6 +183,12 @@ zero, or the literal text `false`. Any other value is truthy and the element sho
 | `{{> prefix/name}}` | anywhere | include a Block from a specific source app's namespace prefix |
 | `{{> name param=Value param2="literal"}}` | anywhere | include a Block, passing parameters — see "Reusable Blocks with parameters" below |
 | `{{$name}}` | inside a Block's own content only | the value supplied for parameter `name` at the include site |
+
+:::tip[Finding a caption token's exact name]
+If you reference a `...Caption` token that doesn't exist, the resulting error lists every
+valid caption name available for that report — a quick way to discover the exact name
+without leaving the template you're writing.
+:::
 
 :::note
 Blocks were formerly called "Partials" in the client UI. The rename is caption-only — the
@@ -896,6 +903,14 @@ and dataset combination actually uses — so the rendered document is fully
 self-contained and looks identical on any viewer, with none of the fonts installed.
 Embedding and subsetting never affect the deterministic-output guarantee: identical
 font bytes, template, and dataset always produce byte-identical PDF output.
+
+:::note[Matching is case-insensitive]
+Registered font asset names always *display* in uppercase (for example
+`PAGEWORKS CODE 128`) — that's a display detail of where the name is stored, not a
+matching rule. `font-family` matching against that name is case-insensitive, so
+`font-family: Pageworks Code 128` in a template resolves correctly and is the
+preferred, readable form to write.
+:::
 
 ### The script scope boundary
 

@@ -6,6 +6,47 @@ learn more. For the complete, terse technical change record, see the
 
 ## This release
 
+### Build layout tooling against Pageworks — External layout-development API
+
+Pageworks now exposes a dedicated Business Central API for external layout-development
+tools — discover which reports you can build against, render draft template text and
+get back a document with nothing saved (optionally with structured diagnostics and
+computed layout geometry for automated verification, no PDF rasterization needed),
+discover a report's available data before you bind to it, manage every asset type
+(Fonts, Stylesheets, Blocks, Page Sizes, Images) with full CRUD, and publish a finished
+template as a real, selectable report layout. Everything a layout-development tool
+needs, over the wire, with no interactive session required and its own dedicated,
+minimal permission grouping.
+
+→ [External API for layout-development tools](/reference/external-layout-api)
+
+### Add a field to a report's dataset without a developer — Dataset Fields
+
+Need one more field on a layout than the report already exposes — a customer's phone
+number, an item's vendor, a company logo? Point at a related table already reachable
+from the report's own data, define how a report row matches a record there (or, for a
+single-record table like Company Information, skip that step entirely), and pick the
+fields you want — with optional aggregation across matches, and a Media/BLOB field
+(a picture) usable directly as an `<img>` source. No AL required, and it now reaches a
+template and the Insert Picker's Custom tab.
+
+→ [Adding fields to a report's dataset](/guides/dataset-fields)
+
+### Build a request-page filter without hand-authoring XML — `buildFilterParams`
+
+Some reports need filter information before they'll produce any data — previously that
+meant hand-authoring `RequestPageParameters` XML yourself. A new action builds it for
+you from a plain list of field filters, ready to pass straight into `renderTemplate`.
+
+→ [External API for layout-development tools](/reference/external-layout-api)
+
+### Faster rendering, no changes needed
+
+Core rendering got noticeably faster this release — up to 50% lower render time on
+typical multi-line documents in our own benchmarks, with output verified
+byte-identical to before. Nothing to configure; every existing layout just renders
+quicker.
+
 ### Set your corporate look once — Shared styles
 
 You no longer have to repeat `style="..."` on every element or hunt through templates when a

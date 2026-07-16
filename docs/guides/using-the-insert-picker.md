@@ -8,7 +8,7 @@ having to memorize or look up the exact token.
 
 ## What you can insert
 
-The picker has four tabs:
+The picker has five tabs:
 
 | Tab | Inserts | Notes |
 |---|---|---|
@@ -16,6 +16,7 @@ The picker has four tabs:
 | **Blocks** | `{{> Name}}` | Every Block you can currently reference (your tenant's own Blocks, plus baseline Blocks from installed extensions). |
 | **Images** | `<img src="Name">` | Every registered image asset. |
 | **Fonts** | the full `font-family: Name; font-weight: ...; font-style: ...;` triple | One entry per registered font variant (Regular/Bold/Italic/BoldItalic). The picker always inserts the complete triple for the variant you pick — never just the family name — so the inserted style always resolves to exactly the variant you selected. |
+| **Custom** | `{{DataItem.Column}}` | Every field you've added to the report's dataset via [Dataset Fields](/guides/dataset-fields), scoped to whichever report Layout Studio currently has open. |
 
 ## Where Insert is available, and how it inserts
 

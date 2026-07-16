@@ -27,6 +27,11 @@ function HomepageHeader() {
             to="/reference/developer-reference">
             Developer reference
           </Link>
+          <Link
+            className="button button--outline button--secondary button--lg margin-left--md"
+            to="/whats-new">
+            What's new
+          </Link>
         </div>
       </div>
     </header>

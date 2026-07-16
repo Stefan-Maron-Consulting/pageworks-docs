@@ -62,3 +62,11 @@ baseline fonts above). See [Template language reference — Fonts & Typography](
 for the full script-support/embedding contract, and the family/style-variant resolution rules, and
 [Font support & limitations](/reference/font-support) for the deeper technical contract (what the
 engine accepts, what isn't supported, and the resource limits).
+
+:::note[Matching is case-insensitive]
+The font maintenance page and the API store a font asset's name in an all-caps field, so it always
+*displays* in uppercase (for example `PAGEWORKS CODE 128`). That's a display detail only —
+`font-family` matching against that name is case-insensitive, so writing the family name in mixed
+case in a template, e.g. `font-family: Pageworks Code 128`, resolves correctly and is the preferred,
+readable form to use in your markup.
+:::

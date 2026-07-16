@@ -32,18 +32,20 @@ be a developer.
 | **1D barcodes** | Bind a raw value (an item number, a GTIN) to text styled in a built-in barcode font — Code 39, Code 128, or EAN-13 — and Pageworks auto-encodes it at render time. No font hunting, no manual encode step. See [Barcodes guide](/guides/barcodes). |
 | **QR codes** | Drop a single `<qr value="{{...}}" />` tag to render a scannable, vector QR code bound to any dataset field — no font upload, no external service. See [QR codes guide](/guides/qr-codes). |
 | **Check printing (MICR E-13B)** | A built-in MICR E-13B font makes Pageworks a viable check-printing engine — author the MICR line as ordinary styled text, no special encoding. See [Fonts shipped with Pageworks](/guides/fonts). |
+| **External API for layout-development tools** | Build a layout-development tool against Pageworks entirely over the Business Central API — render, discover a report's data, manage every asset type, and publish a finished layout, all without an interactive session. See [External API for layout-development tools](/reference/external-layout-api). |
+| **Self-service dataset fields, no developer required** | Add a field to a layout that the underlying report doesn't already expose — by pointing at a related record from data already on the report — without a code change. Works for single-record lookups too (e.g. Company Information) with no match step required, and a Media/BLOB field pulled this way can be used as an image. See [Adding fields to a report's dataset](/guides/dataset-fields). |
+| **Build filter parameters without hand-authoring XML** | Some reports need filter information before they'll render; `buildFilterParams` builds valid request-page filter XML from a plain list of field filters. See [External API for layout-development tools](/reference/external-layout-api). |
 
 ## Planned capabilities
 
 | Capability | What it means for you |
 |---|---|
 | **Corporate demo/starter design gallery** | A curated set of professionally designed, ready-to-use layouts (invoices and more) to start from instead of a blank page. |
-| **Self-service custom fields, no developer required** | Add a field to a layout that the underlying report doesn't already expose — by pointing at a related record from data already on the report — without a code change. |
-| **Export to extension** | Once a self-service layout uses an added custom field, generate the AL extension that makes that addition "official," for a developer to review and ship. The layout itself doesn't change in the handoff. |
+| **Export to extension** | Once a self-service layout uses an added dataset field, generate the AL extension that makes that addition "official," for a developer to review and ship. The layout itself doesn't change in the handoff. |
 | **Embedded designer** | A guided, in-tenant surface for consultants and end users to build and adjust layouts using the capabilities above, without hand-writing template markup. |
 | **Richer style selectors** | Shared styles currently target elements by named **class** (`class="brand"`). Planned: broaden how a style rule can match — at minimum element **`id`** selectors, and potentially element/type selectors (e.g. style every `<td>`) — to give the fuller targeting flexibility people expect from HTML/CSS. (Also on this track: fully **isolated Block-local styles**, so a Block can carry its own class namespace without leaking to or from the host layout.) |
 | **Dataset-driven format expressions** | Allow AL developers to expose format expressions (for dates, decimals, numbers) through the dataset, then reference them in template format attributes. Gives AL control over formatting without modifying the template. |
-| **Copilot integration for layout design** | AI-driven layout assistance directly in Business Central. Describe what you want in natural language — Copilot generates markup, adjusts styling, and suggests improvements. Rapid prototyping and iteration without writing code. |
+| **Copilot integration for layout design** | AI-driven layout assistance directly in Business Central. Describe what you want in natural language — Copilot generates markup, adjusts styling, and suggests improvements. Rapid prototyping and iteration without writing code. (The [external layout-development API](/reference/external-layout-api) above is the building block this will be built on.) |
 
 ## Requesting something
 

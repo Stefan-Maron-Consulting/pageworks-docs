@@ -22,12 +22,13 @@ already understands BC telemetry (Log Analytics, etc.) understands these events 
 | Event ID | Signals | Verbosity | Key custom dimensions |
 |---|---|---|---|
 | `LF0001` | A report render completed successfully. | Normal | `reportId`, `layoutName`, `durationMs`, `pageCount` |
-| `LF0002` | A report render failed. | Error | `reportId`, `layoutName`, `durationMs`, `errorCode` (catalog code from [Error & finding code catalog](/reference/error-codes)) |
+| `LF0002` | A report render failed. | Error | `reportId`, `layoutName`, `durationMs`, `errorCode` (catalog code from [Error & finding code catalog](/reference/error-codes)), `findingLocation` (the failing element path, tag name, or column name — never a dataset value), `findingCount` |
 | `LF0003` | A validation run completed (report or standalone partial). | Normal | `reportId` (0 if none), `findingCount`, `errorCount` |
 | `LF0004` | An extension registered/updated its baseline partials via `PageworksRegistry`. | Normal | `appId` (caller's app id, platform-supplied — never caller-controlled), `prefix`, `partialCount` |
 | `LF0005` | An extension registered/updated a baseline image asset via `PageworksRegistry.RegisterImage`. | Normal | `appId`, `prefix`, `imageCount` |
 | `LF0006` | An extension registered/updated a baseline font asset via `PageworksRegistry.RegisterFont`. | Normal | `appId`, `prefix`, `fontCount` |
 | `LF0007` | The install-time self-test ran. | Normal | `SelfTestPassed` |
+| `LF0009` | An extension registered/updated a baseline stylesheet via `PageworksRegistry.RegisterStyleSheet`. | Normal | `appId`, `prefix`, `styleSheetCount` |
 
 All events use `DataClassification::SystemMetadata` and `TelemetryScope::All`. `All` is
 deliberately chosen — over the narrower `ExtensionPublisher` — so that a customer can

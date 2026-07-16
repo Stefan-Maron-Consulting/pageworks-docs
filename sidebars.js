@@ -15,6 +15,7 @@ const sidebars = {
       label: 'Reference',
       items: [
         'reference/developer-reference',
+        'reference/external-layout-api',
         'reference/template-language',
         'reference/error-codes',
         'reference/api-stability',
@@ -27,6 +28,7 @@ const sidebars = {
       label: 'Guides',
       items: [
         'guides/creating-layouts-in-the-client',
+        'guides/dataset-fields',
         'guides/using-the-insert-picker',
         'guides/telemetry',
         'guides/styles',
