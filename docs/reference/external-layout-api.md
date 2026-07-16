@@ -23,7 +23,7 @@ pages already offer:
 This is a standard Business Central web API (`PageType = API`, OData v4) — the same
 mechanism any other Business Central API integration uses. If you haven't called a
 custom Business Central API before, start with Microsoft's own
-[Integrate with Business Central using APIs](https://learn.microsoft.com/dynamics365/business-central/dev-itpro/administration/api-authentication)
+[Using OAuth to authenticate Business Central web services](https://learn.microsoft.com/en-us/dynamics365/business-central/dev-itpro/webservices/authenticate-web-services-using-oauth)
 guide for authentication (Microsoft Entra ID / OAuth app registration, or a web service
 access key for testing) — Pageworks doesn't add or change any of that; it just publishes
 API pages under its own group.
