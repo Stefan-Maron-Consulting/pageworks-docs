@@ -18,6 +18,8 @@ now works differently), and **Fixed** (corrected defects).
 
 Merged and slated for the next version — not yet on AppSource.
 
+## 1.0.65.0 — 2026-07-17
+
 ### Added
 
 - **External API for layout-development tools.** Build a layout-development tool
