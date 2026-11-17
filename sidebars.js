@@ -35,6 +35,7 @@ const sidebars = {
         'guides/barcodes',
         'guides/qr-codes',
         'guides/fonts',
+        'guides/licensing',
       ],
     },
   ],
