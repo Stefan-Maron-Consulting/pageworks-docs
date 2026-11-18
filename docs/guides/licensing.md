@@ -61,8 +61,24 @@ either.
 ## Assign companies
 
 On the license page, assign the companies that use Pageworks. You can assign as many as the
-license allows. A company that is not assigned cannot render with Pageworks. If you delete
-an assigned company, its place on the license becomes free again.
+license allows. A company that is not assigned cannot render with Pageworks.
+
+Each company on the license takes one place. You can unassign a company at any time. Deleting
+an assigned company also unassigns it.
+
+### Switch a place to another company
+
+When you assign a company to a place that another company used before, that is a switch.
+
+- Assigning a company again that you just unassigned is never a switch. It gets its place back.
+- The first switch of a place is always possible. If you assigned the wrong company, unassign
+  it and assign the right one.
+- After that, the same place can switch again 30 days after its last switch. The license page
+  shows the date when a place can switch again.
+
+The license covers a fixed set of companies. It is not meant to be moved between companies
+whenever one of them needs to print. If you need more companies, contact us and we raise the
+limit on your license.
 
 ## License check
 
@@ -77,6 +93,14 @@ unpaid license is paid and reactivated.
 Pageworks keeps working for up to 7 days after the last successful check. The license page
 shows the date when this period ends. After that date, Pageworks stops rendering until a
 check succeeds.
+
+During these 7 days, Pageworks shows a notification each time a user prints. It says that
+the license could not be confirmed and gives the date when the period ends.
+
+We try hard to keep the licensing service available. If the service itself has a problem, we
+most likely already know about it from our monitoring and alerts, and we are working on it.
+If you see the notification and want to be sure, contact us. Tell us the environment name and
+the date of the last successful check from the license page, and we look into it.
 
 If the service answers that the license is expired, suspended, or revoked, Pageworks stops
 at once. The 7-day period does not apply.
