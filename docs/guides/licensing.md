@@ -22,11 +22,22 @@ production environment and order a license there.
   license. The license terms describe how.
 - You choose which companies use Pageworks. You assign them on the license page (see below).
 
+## Find the licenses list
+
+In Business Central, search for "license" and open **Stefan Maron Consulting Licenses**. The
+list shows one row per product that uses the licensing app. Each row shows the status, the
+expiry date, and the assigned companies out of the limit. You cannot edit the list.
+
+To work with one license, open its row. The license page opens for that product.
+
 ## Order a license
 
-1. Open the license page from Pageworks. Use either of these:
+1. Open the license page. Use any of these:
+   - In the licenses list, choose the product name, for example **Pageworks**.
    - In Layout Studio, choose **License**.
    - When a render fails with the "not licensed" error, choose the action on that error.
+
+   The page is titled with the product name, for example "Pageworks License".
 2. Fill in the order form:
    - Company name
    - Address
@@ -34,11 +45,22 @@ production environment and order a license there.
    - Billing contact (name and email)
    - Purchase order number (optional)
 3. Read the terms and select the checkbox to accept them.
-4. Place the order.
+4. Choose **OK**.
+5. Confirm the order. Business Central shows this text:
 
-The order is binding. Pageworks works as soon as you place it. An invoice follows afterward.
-A license that stays unpaid can be suspended. A suspended license stops Pageworks from
-rendering in that environment until the license is active again.
+   > You are about to place a legally binding order for a 12-month license of Pageworks for
+   > this environment. The license renews every year and is invoiced in advance. You can use
+   > Pageworks right after the order is placed. For current pricing, see the pricing link. If
+   > you are not sure yet, contact us before you order: the contact link.
+
+   The pricing sentence appears only when the product supplies a pricing link. Without a
+   contact link, the last sentence reads "If you are not sure yet, contact the publisher
+   before you order." If you decline, Pageworks sends nothing and the order form stays open
+   with your entries.
+
+The order is binding once you confirm it. Pageworks works as soon as you place it. An
+invoice follows afterward. A license that stays unpaid can be suspended. A suspended license
+stops Pageworks from rendering in that environment until the license is active again.
 
 Only users with the license admin permission set can order, enter a key, use **Check now**,
 or assign companies. Other users can view the license page.
@@ -47,16 +69,16 @@ or assign companies. Other users can view the license page.
 
 If you received a license key by email, enter it instead of placing an order.
 
-1. Open the license page from Pageworks (Layout Studio, then **License**).
+1. Open the license page from the licenses list, or from Pageworks (Layout Studio, then
+   **License**).
 2. Paste the key into the key field.
 3. Confirm the entry.
 
 A key belongs to one environment. If you paste it in a second environment, the page tells
 you the key is bound to another environment.
 
-If you open the license page from the Business Central search instead of from Pageworks, you
-can view the status but you cannot order or enter a key. Open the page from Pageworks to do
-either.
+To enter a key from the licenses list, search for "license", open **Stefan Maron Consulting
+Licenses**, choose the product name, and paste the key into the key field.
 
 ## Assign companies
 
