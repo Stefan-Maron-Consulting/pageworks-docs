@@ -6,6 +6,22 @@ learn more. For the complete, terse technical change record, see the
 
 ## This release
 
+### Licensing through Keygen — order inside Business Central
+
+Pageworks now gets its license from a separate app, Stefan Maron Consulting Licensing,
+which installs together with Pageworks. You can order a license inside Business Central
+and get the invoice by email, or enter a license key you already have.
+
+- One license covers one production environment, with 3 companies included. You choose
+  which companies use it.
+- Sandbox environments are free. Every render in a sandbox carries a watermark.
+- Spare Brained Licensing and Lemon Squeezy are no longer needed. You may uninstall the
+  Spare Brained Licensing app.
+
+→ [Licensing guide](/guides/licensing)
+
+## Earlier releases
+
 ### Build layout tooling against Pageworks — External layout-development API
 
 Pageworks now exposes a dedicated Business Central API for external layout-development

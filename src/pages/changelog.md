@@ -12,11 +12,40 @@ list covers **user-facing** changes only — it is not an exhaustive build log. 
 what's coming next, see the [Roadmap](/roadmap).
 
 Changes are grouped as **Added** (new capabilities), **Changed** (existing behaviour that
-now works differently), and **Fixed** (corrected defects).
+now works differently), **Removed** (things you no longer need), and **Fixed** (corrected defects).
 
 ## Unreleased
 
 Merged and slated for the next version — not yet on AppSource.
+
+## 1.0.87.0 — 2026-11-19
+
+### Added
+
+- **Licensing through Keygen.** Pageworks now gets its license from a separate app,
+  Stefan Maron Consulting Licensing, which installs with Pageworks. You can order a
+  license inside Business Central and get an invoice by email, or enter a license key you
+  already have. A license belongs to one environment. By default it covers up to 3
+  companies, and you choose which companies use it on the license page. Sandbox
+  environments are free: every render there carries a watermark. Production environments
+  without a valid license are blocked from rendering. See the
+  [Licensing guide](/guides/licensing).
+
+### Removed
+
+- **Spare Brained Licensing and Lemon Squeezy are no longer needed.** Pageworks does not
+  use them any more. You may uninstall the Spare Brained Licensing app from your
+  environments.
+
+## 1.0.68.0 — 2026-08-03
+
+### Fixed
+
+- **A newly added custom dataset field now appears in Layout Studio right away.** Before,
+  a field added through the dataset field configuration showed up in the field picker and
+  the live preview only after you closed and reopened Layout Studio. The configuration
+  screen now opens as a dialog, and closing it refreshes the preview and the available
+  fields, so you can use the new field without leaving Layout Studio.
 
 ## 1.0.65.0 — 2026-07-17
 
