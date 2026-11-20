@@ -18,6 +18,31 @@ now works differently), **Removed** (things you no longer need), and **Fixed** (
 
 Merged and slated for the next version — not yet on AppSource.
 
+## 1.0.94.0 — 2026-11-20
+
+### Added
+
+- **A searchable licenses list.** Search for "license" in Business Central and open
+  **Stefan Maron Consulting Licenses**. The list shows one row per product that uses the
+  licensing app, with its status, expiry date, and assigned companies out of the limit.
+  Open a row to see that product's license, order a license, or enter a key. The list is
+  read-only.
+- **A confirmation before an order is sent.** After you fill in the order form and choose OK,
+  Business Central asks you to confirm. It says the order is legally binding, for a 12-month
+  license that renews every year and is invoiced in advance. It also links to current pricing
+  and to the contact page for anyone who is not sure yet. If you decline, nothing is sent and
+  the order form stays open with your entries.
+
+### Changed
+
+- **The license page title names the product.** The page is now titled "Pageworks License"
+  instead of "License".
+- **The license page no longer appears in search.** Use the new licenses list instead.
+- **The "choose the app" menu is gone.** Every way into the license page now opens it
+  directly for the right product.
+- **Order and Check now are on the license page's action bar.** The list of companies now
+  uses the full width of the page, below the company fields.
+
 ## 1.0.87.0 — 2026-11-19
 
 ### Added
