@@ -169,5 +169,23 @@ To order, enter a key, or check a license, Pageworks sends data to the licensing
 
 Pageworks does not send the content of your documents or your Business Central business data.
 
+### License compliance logging
+
+Pageworks checks that every license answer it receives is genuine. If an answer fails this
+check, or Pageworks cannot get a verified answer, it logs a short event that only the
+publisher can see. It does not appear in your own telemetry.
+
+The event contains:
+
+- The reason the check failed, as a short fixed word
+- The Pageworks app ID
+- Your environment name
+- Your tenant ID
+
+The event never contains license keys, tokens, or signatures.
+
+We send it to detect tampered or forged license answers, and to notice when the licensing
+service has an outage.
+
 For the full details, read the
 [privacy statement](https://stefanmaronconsulting.com/privacy-policy/).
