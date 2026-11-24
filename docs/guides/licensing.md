@@ -158,12 +158,11 @@ could not reach the licensing service, check this setting:
 
 - **Copy to a sandbox.** The copy does not keep a usable license. The sandbox is free and
   renders with the SANDBOX watermark.
-- **Copy to another production environment.** A license belongs to one environment. Contact
-  us if you need the license in the new environment.
-- **Rename a production environment.** The license no longer matches the environment. The
-  license page tells you to contact us. Pageworks keeps working during the grace period (48 hours by
-  default) after the last successful check. We move the license to the new name for you. Contact us as soon as
-  you plan a rename.
+- **Copy to another production environment.** A copy is a new environment, so it does not
+  inherit the license. The license page shows that the license is registered to another
+  environment. Contact us to activate a license for the copy.
+- **Rename an environment.** A rename keeps the license. Pageworks keeps working and you do
+  not need to do anything.
 
 To reach us, use the contact details on the
 [Stefan Maron Consulting website](https://stefanmaronconsulting.com/).
