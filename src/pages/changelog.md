@@ -12,11 +12,48 @@ list covers **user-facing** changes only — it is not an exhaustive build log. 
 what's coming next, see the [Roadmap](/roadmap).
 
 Changes are grouped as **Added** (new capabilities), **Changed** (existing behaviour that
-now works differently), **Removed** (things you no longer need), and **Fixed** (corrected defects).
+now works differently), **Deprecated** (things that still work but will go away), **Removed** (things you no longer need),
+**Security** (changes to protect your license and data), and **Fixed** (corrected defects).
 
 ## Unreleased
 
 Merged and slated for the next version — not yet on AppSource.
+
+## 1.0.122.0 — 2026-11-26
+
+### Security
+
+- **License answers are signed and checked.** The licensing app signs every answer, and
+  Pageworks checks the signature before it renders. Pageworks refuses an answer that is
+  unsigned, altered, or meant for another app, environment, or company. The publisher
+  receives a short event when this happens. The event never contains a key, token, or
+  signature.
+- **Company assignments and stored license state are protected.** The licensing app signs
+  what it stores. If someone edits the stored data, Pageworks ignores it and asks the
+  licensing service again.
+- **A removed environment leaves the whitelist at once.** When an environment is removed
+  from the whitelist, the change takes effect the next time Pageworks reads the list.
+- **A license that has expired is refused.** Pageworks checks the expiry date on every
+  render, so an expired license is no longer valid even when the last check was recent or
+  the licensing service cannot be reached.
+- **Every build is checked.** Each build now fails if it contains the setting that turns
+  the license check off for local development.
+
+### Changed
+
+- **Pageworks now requires licensing app version 1.1 or later.** The update installs it
+  together with Pageworks.
+- **One grace period for every outage.** When the licensing service, the key vault, or the
+  whitelist cannot be reached, Pageworks keeps working for 48 hours after the last
+  successful check. Before, the period was 7 days for the licensing service and 72 hours
+  for the whitelist. The publisher can set another period for the product. An environment
+  that has never completed a check gets no grace period.
+
+### Deprecated
+
+- **The older procedures that register a product with the licensing app.** They are
+  deprecated, and the values you pass to them are ignored. Call `Register()` instead. The
+  product details now come from the product's entry in the key vault.
 
 ## 1.0.94.0 — 2026-11-20
 

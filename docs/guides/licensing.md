@@ -110,14 +110,31 @@ the current status and the reason.
 To check right away, choose **Check now** on the license page. For example, use it after an
 unpaid license is paid and reactivated.
 
+### What the check confirms
+
+Every answer from the licensing service is signed. Pageworks checks the signature and refuses
+an answer that does not pass. A license that has passed its expiry date is not valid, even
+if the last check was recent or the service cannot be reached.
+
+The order flow has not changed. You order a license, enter a key, and assign companies the
+same way as before.
+
 ### If the licensing service cannot be reached
 
-Pageworks keeps working for up to 7 days after the last successful check. The license page
-shows the date when this period ends. After that date, Pageworks stops rendering until a
-check succeeds.
+Pageworks keeps working for 48 hours after the last successful check. The same period applies
+whenever Pageworks cannot get a verified answer, for example when the license check cannot
+be completed or the answer fails the signature check. The license page shows the date when
+this period ends. After that date, Pageworks stops rendering until a check succeeds.
 
-During these 7 days, Pageworks shows a notification each time a user prints. It says that
-the license could not be confirmed and gives the date when the period ends.
+The 48 hours are the default. If we set a different period for Pageworks, the license page
+shows the date that applies.
+
+The period starts only after a successful check. An environment that has never completed a
+check gets no grace period.
+
+During this period, Pageworks shows a notification each time a user prints. It says that the
+license could not be confirmed and gives the date when the period ends. The notification has
+an action that opens the license page.
 
 We try hard to keep the licensing service available. If the service itself has a problem, we
 most likely already know about it from our monitoring and alerts, and we are working on it.
@@ -125,7 +142,7 @@ If you see the notification and want to be sure, contact us. Tell us the environ
 the date of the last successful check from the license page, and we look into it.
 
 If the service answers that the license is expired, suspended, or revoked, Pageworks stops
-at once. The 7-day period does not apply.
+at once. The grace period does not apply.
 
 ### Allow HttpClient Requests
 
@@ -144,8 +161,8 @@ could not reach the licensing service, check this setting:
 - **Copy to another production environment.** A license belongs to one environment. Contact
   us if you need the license in the new environment.
 - **Rename a production environment.** The license no longer matches the environment. The
-  license page tells you to contact us. Pageworks keeps working for up to 7 days after the
-  last successful check. We move the license to the new name for you. Contact us as soon as
+  license page tells you to contact us. Pageworks keeps working during the grace period (48 hours by
+  default) after the last successful check. We move the license to the new name for you. Contact us as soon as
   you plan a rename.
 
 To reach us, use the contact details on the
