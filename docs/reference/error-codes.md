@@ -18,7 +18,7 @@ an actionable message (Label with Comment) stating what failed AND what to do.
 | LF-FMT | Error | requested output format not served (Word/Excel) | supported format (PDF) + where to change |
 | LF-PREFIX | Error | RegisterSource prefix conflict | prefix + owning app |
 | LF-KEEPOV | Warning | keep-together group taller than one page (will break normally) | group location |
-| LF-CHARS | Warning | template/static text contains characters outside cp1252 (default Helvetica path only) | location; note about `?` substitution |
+| LF-CHARS | Warning | template/static text contains characters that neither Helvetica nor the bundled Source Sans 3 can show (default-font text only). Characters Helvetica lacks but Source Sans 3 has print in Source Sans 3 and raise no warning. | location; note that the characters print as `?` |
 | LF-COLSPAN | Error | a `<tr>`'s cell colspan sum (occupancy-adjusted for any active rowspan) ≠ the table's declared column count | the row + actual vs. expected column count |
 | LF-NESTDEPTH | Error | containing-block nesting depth (table/div/section/td/th boundaries from the document root) exceeds 8 | the offending element location + the configured limit (8) |
 | LF-ROWSPANOV | Warning | a `rowspan` group is estimated taller than one full page's printable content area — same static-estimate/documented-degradation philosophy as LF-KEEPOV; it cannot be kept together and breaks across pages normally instead | group location + rowspan count + estimated vs. content-area height |
@@ -50,8 +50,9 @@ an actionable message (Label with Comment) stating what failed AND what to do.
 | LF-SCRIPT-CJK | Error | text styled with a custom `font-family` contains CJK — ideographs, kana, or hangul (deferred pending future composite-font support, distinct reason from LF-SCRIPT-COMPLEX) | the offending text/location |
 | LF-SCRIPT-UNCLASSIFIED | Error | text styled with a custom `font-family` contains a script not yet classified into the in-scope/out-of-scope lists | the offending text/location |
 
-These do not apply to the default Helvetica path, which keeps its unconditional cp1252
-`?`-substitution behavior (`LF-CHARS`, above) regardless of script. See
+These do not apply to text with no font set. That text prints in Helvetica, or in the bundled
+Source Sans 3 for characters Helvetica cannot show. Characters neither font has print as `?`
+and raise `LF-CHARS`, above. See
 [Template language reference](/reference/template-language)'s "Fonts & Typography"
 section for the full in-scope/out-of-scope script table and the two asset limits.
 

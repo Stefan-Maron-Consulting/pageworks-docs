@@ -53,10 +53,29 @@ still render, just at the wrong physical size for check-reading hardware).
 (Transit, Amount, On-Us, Dash) at the canonical Unicode Optical Character Recognition block
 codepoints (U+2446–U+2449).
 
+## Automatic fallback font
+
+Text with no font set prints in Helvetica. If a run of that text has a character Helvetica
+cannot show, such as "ń", the run prints in the bundled Source Sans 3 instead. All four
+styles work. You do not need to change your template.
+
+- **The switch is per run of text.** One such character moves the whole run. In
+  "Café Maroń", both words print in Source Sans 3.
+- **A font-family you set never switches.** Text with a font-family set keeps that font.
+- **A font-family on a block does not pass down to child blocks.** Only inline children
+  inherit it. A paragraph inside a div with a font-family uses the default font, so it can
+  switch.
+- **Some characters still print "?".** Source Sans 3 lacks CJK, emoji, and some rare
+  letters. The design-time warning appears only for characters neither font can show.
+- **Limit of 254 distinct characters.** Per document and style, at most 254 distinct
+  characters print in Source Sans 3. After that, extra characters print "?".
+- **Copying text works.** Text copied out of the PDF from a switched run gives the right
+  characters.
+
 ## How font resolution works
 
-`font-family`'s legal values are the literal `Helvetica` (the PDF standard-14 default, no
-registration required) plus the name of any currently registered font asset — tenant-uploaded via
+Text with no `font-family` prints in the default Helvetica, which needs no registration. `font-family` must be
+the name of a currently registered font asset — tenant-uploaded via
 the font maintenance page, or shipped by a dependent extension (including this engine's own
 baseline fonts above). See [Template language reference — Fonts & Typography](/reference/template-language#fonts--typography)
 for the full script-support/embedding contract, and the family/style-variant resolution rules, and
