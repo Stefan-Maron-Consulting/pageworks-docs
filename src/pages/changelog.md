@@ -19,6 +19,35 @@ now works differently), **Deprecated** (things that still work but will go away)
 
 Merged and slated for the next version — not yet on AppSource.
 
+## 1.0.123.0 — 2026-11-26
+
+### Added
+
+- **Automatic fallback font for text Helvetica cannot show.** Text with no font set now
+  prints in the bundled Source Sans 3 when it contains a character Helvetica cannot show,
+  such as "ń". All four styles are supported. You do not need to change any template.
+  See [Automatic fallback font](/guides/fonts#automatic-fallback-font).
+- **The switch happens per run of text.** One such character moves the whole run to Source
+  Sans 3. In "Café Maroń", both words print in Source Sans 3.
+- **A font-family you set is never replaced.** Text with a font-family set does not switch.
+  A font-family on a block does not pass down to child blocks. Only inline children inherit
+  it. A paragraph inside a div with a font-family uses the default font, so it can switch.
+- **Characters Source Sans 3 also lacks still print "?".** This includes CJK, emoji, and
+  some rare letters. Each render that prints "?" is counted, with a reason, in the
+  publisher's telemetry.
+- **Limit of 254 distinct characters.** Per document and style, at most 254 distinct
+  characters print in Source Sans 3. After that, extra characters print "?".
+- **Copied text is correct.** Text copied out of the PDF from a switched run gives the
+  right characters.
+
+### Changed
+
+- **The design-time characters warning is narrower.** It now appears only for characters
+  that neither Helvetica nor Source Sans 3 can show.
+- **Literal text under the font-family "Helvetica" or "Arial" no longer gets that
+  warning.** Those names are not registered fonts, so such a template already fails with a
+  "font not found" error. This release does not change that error.
+
 ## 1.0.122.0 — 2026-11-26
 
 ### Security
